@@ -1,0 +1,455 @@
+/* 全局样式 */
+html, body {
+    height: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#app {
+    height: 100vh;
+}
+
+/* 导航栏样式 */
+.navbar {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.navbar-brand {
+    font-weight: 600;
+}
+
+/* 搜索框样式 */
+#searchInput {
+    border: none;
+    background: rgba(255,255,255,0.9);
+    transition: all 0.3s ease;
+}
+
+#searchInput:focus {
+    background: white;
+    box-shadow: 0 0 0 0.2rem rgba(255,255,255,0.25);
+}
+
+/* 侧边栏样式 */
+.bg-light {
+    background-color: #f8f9fa !important;
+}
+
+.card {
+    border: none;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+/* 短语卡片样式 */
+.phrase-card {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background: white;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.phrase-card:hover {
+    margin-top: 5px;
+    box-shadow: 0 2px 8px rgba(0,123,255,0.15);
+    transform: translateY(-1px);
+}
+
+.phrase-card.unknown {
+    border-left: 4px solid #ffc107;
+    background: linear-gradient(90deg, #fff9e6 0%, white 10%);
+}
+
+.phrase-text {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #212529;
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+}
+
+.phrase-meta {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+}
+
+.phrase-source {
+    font-size: 0.8rem;
+    color: #007bff;
+    text-decoration: none;
+    word-break: break-all;
+}
+
+.phrase-source:hover {
+    text-decoration: underline;
+}
+
+.phrase-context {
+    font-size: 0.875rem;
+    color: #6c757d;
+    font-style: italic;
+    background: #f8f9fa;
+    padding: 0.5rem;
+    border-radius: 4px;
+    margin: 0.5rem 0;
+    border-left: 3px solid #dee2e6;
+}
+
+.phrase-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.phrase-actions .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+}
+
+/* 标签样式 */
+.tag {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border-radius: 12px;
+    color: white;
+    margin: 0.125rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.tag:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
+}
+
+.tag.active {
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.5);
+}
+
+/* 未知状态标记 */
+.unknown-badge {
+    background: linear-gradient(45deg, #ffc107, #ffca2c);
+    color: #212529;
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* 统计卡片样式 */
+.stats-card {
+    text-align: center;
+    padding: 1rem;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    margin-bottom: 1rem;
+}
+
+.stats-number {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.stats-label {
+    font-size: 0.875rem;
+    opacity: 0.9;
+}
+
+/* 分页样式 */
+.pagination {
+    margin-bottom: 0;
+}
+
+.page-link {
+    border-radius: 6px;
+    margin: 0 2px;
+    border: 1px solid #dee2e6;
+}
+
+.page-item.active .page-link {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    border-color: #007bff;
+}
+
+/* 模态框样式 */
+.modal-content {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.modal-header {
+    border-bottom: 1px solid #e9ecef;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-radius: 12px 12px 0 0;
+}
+
+.modal-title {
+    font-weight: 600;
+    color: #495057;
+}
+
+/* 表单样式 */
+.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+}
+
+.form-select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+}
+
+/* 按钮样式 */
+.btn {
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    border: none;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #0056b3, #004085);
+}
+
+.btn-outline-light:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.3);
+}
+
+/* Toast 通知样式 */
+.toast {
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.toast-header {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-bottom: 1px solid #dee2e6;
+}
+
+/* 加载动画 */
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+/* 空状态样式 */
+#emptyState {
+    opacity: 0.7;
+}
+
+#emptyState .display-1 {
+    font-size: 4rem;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .navbar-brand {
+        font-size: 1rem;
+    }
+    
+    .phrase-card {
+        padding: 0.75rem;
+    }
+    
+    .phrase-text {
+        font-size: 1rem;
+    }
+    
+    .col-md-3 {
+        display: none;
+    }
+    
+    .col-md-9 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* 动画效果 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.slide-in {
+    animation: slideIn 0.3s ease-out;
+}
+
+/* 高亮搜索结果 */
+.highlight {
+    background: linear-gradient(120deg, #ffeb3b 0%, #fff59d 100%);
+    padding: 0.1rem 0.2rem;
+    border-radius: 3px;
+    font-weight: 600;
+}
+
+/* 选中状态 */
+.phrase-card.selected {
+    border-color: #007bff;
+    background: linear-gradient(135deg, #e3f2fd 0%, #f8f9fa 100%);
+    box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+}
+
+/* 工具提示样式 */
+.tooltip {
+    font-size: 0.875rem;
+}
+
+.tooltip-inner {
+    background: rgba(0,0,0,0.9);
+    border-radius: 6px;
+    padding: 0.5rem 0.75rem;
+}
+
+/* 键盘快捷键显示 */
+kbd {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border: 1px solid #adb5bd;
+    border-radius: 4px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    color: #495057;
+    font-family: 'Courier New', monospace;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.2rem 0.4rem;
+}
+
+/* 上下文显示样式 */
+.context-preview {
+    max-height: 60px;
+    overflow: hidden;
+    position: relative;
+}
+
+.context-preview::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 20px;
+    background: linear-gradient(transparent, #f8f9fa);
+}
+
+/* 来源链接样式 */
+.source-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: #007bff;
+    text-decoration: none;
+    font-size: 0.8rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    background: rgba(0,123,255,0.1);
+    transition: all 0.2s ease;
+}
+
+.source-link:hover {
+    background: rgba(0,123,255,0.2);
+    color: #0056b3;
+    text-decoration: none;
+}
+
+/* 时间显示样式 */
+.time-ago {
+    font-size: 0.75rem;
+    color: #6c757d;
+    font-style: italic;
+}
+
+/* 批量操作样式 */
+.batch-actions {
+    position: sticky;
+    top: 0;
+    background: white;
+    border-bottom: 1px solid #dee2e6;
+    padding: 0.75rem 0;
+    margin-bottom: 1rem;
+    z-index: 10;
+}
+
+/* 拖拽样式 */
+.dragging {
+    opacity: 0.5;
+    transform: rotate(5deg);
+}
+
+.drop-zone {
+    border: 2px dashed #007bff;
+    background: rgba(0,123,255,0.1);
+    border-radius: 8px;
+    padding: 2rem;
+    text-align: center;
+    color: #007bff;
+    transition: all 0.3s ease;
+}
+
+.drop-zone.active {
+    background: rgba(0,123,255,0.2);
+    border-color: #0056b3;
+}
