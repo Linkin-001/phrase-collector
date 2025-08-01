@@ -1,12 +1,16 @@
-const knex = require('knex');
 const path = require('path');
 const fs = require('fs');
 const { app } = require('electron');
 
 class Database {
   constructor() {
-    this.db = null;
-    this.dbPath = path.join(app.getPath('userData'), 'PhraseCollector', 'data.db');
+    this.data = {
+      phrases: [],
+      tags: [],
+      settings: {},
+      nextId: 1
+    };
+    this.dbPath = path.join(app.getPath('userData'), 'PhraseCollector', 'data.json');
   }
 
   async init() {
@@ -16,131 +20,76 @@ class Database {
       fs.mkdirSync(dbDir, { recursive: true });
     }
 
-    // 初始化数据库连接
-    this.db = knex({
-      client: 'sqlite3',
-      connection: {
-        filename: this.dbPath
-      },
-      useNullAsDefault: true
-    });
-
-    // 创建表
-    await this.createTables();
+    // 加载现有数据
+    await this.loadData();
   }
 
-  async createTables() {
-    // 创建短语表
-    await this.db.schema.hasTable('phrases').then(exists => {
-      if (!exists) {
-        return this.db.schema.createTable('phrases', table => {
-          table.increments('id').primary();
-          table.text('text').notNullable(); // 短语内容
-          table.text('source').nullable(); // 来源URL/路径
-          table.text('appName').nullable(); // 来源应用名称
-          table.text('selectionContext').nullable(); // 上下文环境
-          table.timestamp('timestamp').defaultTo(this.db.fn.now()); // 保存时间
-          table.boolean('isUnknown').defaultTo(false); // 是否不认识
-          table.json('metadata').nullable(); // 额外元数据
-          table.timestamps(true, true); // created_at, updated_at
-        });
+  async loadData() {
+    try {
+      if (fs.existsSync(this.dbPath)) {
+        const data = JSON.parse(fs.readFileSync(this.dbPath, 'utf8'));
+        this.data = { ...this.data, ...data };
       }
-    });
+    } catch (error) {
+      console.error('加载数据失败:', error);
+    }
+  }
 
-    // 创建标签表
-    await this.db.schema.hasTable('tags').then(exists => {
-      if (!exists) {
-        return this.db.schema.createTable('tags', table => {
-          table.increments('id').primary();
-          table.string('name').notNullable().unique();
-          table.string('color').defaultTo('#007bff');
-          table.timestamps(true, true);
-        });
-      }
-    });
-
-    // 创建短语标签关联表
-    await this.db.schema.hasTable('phrase_tags').then(exists => {
-      if (!exists) {
-        return this.db.schema.createTable('phrase_tags', table => {
-          table.increments('id').primary();
-          table.integer('phrase_id').references('id').inTable('phrases').onDelete('CASCADE');
-          table.integer('tag_id').references('id').inTable('tags').onDelete('CASCADE');
-          table.unique(['phrase_id', 'tag_id']);
-        });
-      }
-    });
-
-    // 创建设置表
-    await this.db.schema.hasTable('settings').then(exists => {
-      if (!exists) {
-        return this.db.schema.createTable('settings', table => {
-          table.string('key').primary();
-          table.text('value');
-          table.timestamps(true, true);
-        });
-      }
-    });
+  async saveData() {
+    try {
+      fs.writeFileSync(this.dbPath, JSON.stringify(this.data, null, 2));
+    } catch (error) {
+      console.error('保存数据失败:', error);
+    }
   }
 
   // 获取短语列表
   async getPhrases(options = {}) {
     const { page = 1, limit = 20, search, tag, isUnknown, sortBy = 'timestamp', sortOrder = 'desc' } = options;
     
-    let query = this.db('phrases')
-      .leftJoin('phrase_tags', 'phrases.id', 'phrase_tags.phrase_id')
-      .leftJoin('tags', 'phrase_tags.tag_id', 'tags.id')
-      .select(
-        'phrases.*',
-        this.db.raw('GROUP_CONCAT(tags.name) as tag_names'),
-        this.db.raw('GROUP_CONCAT(tags.color) as tag_colors')
-      )
-      .groupBy('phrases.id');
+    let phrases = [...this.data.phrases];
 
     // 搜索过滤
     if (search) {
-      query = query.where('phrases.text', 'like', `%${search}%`);
+      phrases = phrases.filter(phrase => 
+        phrase.text.toLowerCase().includes(search.toLowerCase())
+      );
     }
 
     // 标签过滤
     if (tag) {
-      query = query.having('tag_names', 'like', `%${tag}%`);
+      phrases = phrases.filter(phrase => 
+        phrase.tags && phrase.tags.some(t => t.name === tag)
+      );
     }
 
     // 未知状态过滤
     if (typeof isUnknown === 'boolean') {
-      query = query.where('phrases.isUnknown', isUnknown);
+      phrases = phrases.filter(phrase => phrase.isUnknown === isUnknown);
     }
 
     // 排序
-    query = query.orderBy(`phrases.${sortBy}`, sortOrder);
+    phrases.sort((a, b) => {
+      const aVal = a[sortBy];
+      const bVal = b[sortBy];
+      if (sortOrder === 'desc') {
+        return bVal > aVal ? 1 : -1;
+      } else {
+        return aVal > bVal ? 1 : -1;
+      }
+    });
 
     // 分页
+    const total = phrases.length;
     const offset = (page - 1) * limit;
-    const results = await query.limit(limit).offset(offset);
-
-    // 获取总数
-    const totalQuery = this.db('phrases');
-    if (search) {
-      totalQuery.where('text', 'like', `%${search}%`);
-    }
-    if (typeof isUnknown === 'boolean') {
-      totalQuery.where('isUnknown', isUnknown);
-    }
-    const total = await totalQuery.count('id as count').first();
+    const paginatedPhrases = phrases.slice(offset, offset + limit);
 
     return {
-      data: results.map(phrase => ({
-        ...phrase,
-        tags: phrase.tag_names ? phrase.tag_names.split(',').map((name, index) => ({
-          name,
-          color: phrase.tag_colors ? phrase.tag_colors.split(',')[index] : '#007bff'
-        })) : []
-      })),
-      total: total.count,
+      data: paginatedPhrases,
+      total,
       page,
       limit,
-      totalPages: Math.ceil(total.count / limit)
+      totalPages: Math.ceil(total / limit)
     };
   }
 
@@ -148,101 +97,110 @@ class Database {
   async addPhrase(phraseData) {
     const { text, source, appName, selectionContext, isUnknown = false, tags = [], metadata = {} } = phraseData;
     
-    const [phraseId] = await this.db('phrases').insert({
+    const phrase = {
+      id: this.data.nextId++,
       text,
       source,
       appName,
       selectionContext,
       isUnknown,
-      metadata: JSON.stringify(metadata)
-    });
+      tags: tags.map(tagName => ({ name: tagName, color: '#007bff' })),
+      metadata,
+      timestamp: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
 
-    // 添加标签关联
-    if (tags.length > 0) {
-      await this.addTagsToPhrase(phraseId, tags);
-    }
-
-    return phraseId;
+    this.data.phrases.push(phrase);
+    await this.saveData();
+    return phrase.id;
   }
 
   // 更新短语
   async updatePhrase(id, phraseData) {
+    const phraseIndex = this.data.phrases.findIndex(p => p.id === id);
+    if (phraseIndex === -1) return false;
+
+    const phrase = this.data.phrases[phraseIndex];
     const { text, source, appName, selectionContext, isUnknown, tags, metadata } = phraseData;
     
-    const updateData = {};
-    if (text !== undefined) updateData.text = text;
-    if (source !== undefined) updateData.source = source;
-    if (appName !== undefined) updateData.appName = appName;
-    if (selectionContext !== undefined) updateData.selectionContext = selectionContext;
-    if (isUnknown !== undefined) updateData.isUnknown = isUnknown;
-    if (metadata !== undefined) updateData.metadata = JSON.stringify(metadata);
-
-    await this.db('phrases').where('id', id).update(updateData);
-
-    // 更新标签关联
+    if (text !== undefined) phrase.text = text;
+    if (source !== undefined) phrase.source = source;
+    if (appName !== undefined) phrase.appName = appName;
+    if (selectionContext !== undefined) phrase.selectionContext = selectionContext;
+    if (isUnknown !== undefined) phrase.isUnknown = isUnknown;
+    if (metadata !== undefined) phrase.metadata = metadata;
     if (tags !== undefined) {
-      await this.db('phrase_tags').where('phrase_id', id).del();
-      if (tags.length > 0) {
-        await this.addTagsToPhrase(id, tags);
-      }
+      phrase.tags = tags.map(tagName => ({ name: tagName, color: '#007bff' }));
     }
+    phrase.updated_at = new Date().toISOString();
 
+    await this.saveData();
     return true;
   }
 
   // 删除短语
   async deletePhrase(id) {
-    await this.db('phrases').where('id', id).del();
+    const phraseIndex = this.data.phrases.findIndex(p => p.id === id);
+    if (phraseIndex === -1) return false;
+
+    this.data.phrases.splice(phraseIndex, 1);
+    await this.saveData();
     return true;
   }
 
   // 搜索短语
   async searchPhrases(query) {
-    const results = await this.db('phrases')
-      .where('text', 'like', `%${query}%`)
-      .orWhere('source', 'like', `%${query}%`)
-      .orWhere('appName', 'like', `%${query}%`)
-      .orderBy('timestamp', 'desc')
-      .limit(50);
-
-    return results;
+    return this.data.phrases
+      .filter(phrase => 
+        phrase.text.toLowerCase().includes(query.toLowerCase()) ||
+        (phrase.source && phrase.source.toLowerCase().includes(query.toLowerCase())) ||
+        (phrase.appName && phrase.appName.toLowerCase().includes(query.toLowerCase()))
+      )
+      .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+      .slice(0, 50);
   }
 
   // 获取统计信息
   async getPhraseStats() {
-    const total = await this.db('phrases').count('id as count').first();
-    const unknown = await this.db('phrases').where('isUnknown', true).count('id as count').first();
-    const today = await this.db('phrases')
-      .where('timestamp', '>=', new Date().toISOString().split('T')[0])
-      .count('id as count').first();
+    const total = this.data.phrases.length;
+    const unknown = this.data.phrases.filter(p => p.isUnknown).length;
+    const today = this.data.phrases.filter(p => {
+      const phraseDate = new Date(p.timestamp).toDateString();
+      const todayDate = new Date().toDateString();
+      return phraseDate === todayDate;
+    }).length;
     
-    const recentSources = await this.db('phrases')
-      .select('source', 'appName')
-      .whereNotNull('source')
-      .groupBy('source', 'appName')
-      .count('id as count')
-      .orderBy('count', 'desc')
-      .limit(5);
+    const sourceCounts = {};
+    this.data.phrases.forEach(phrase => {
+      if (phrase.source) {
+        const key = `${phrase.source}|${phrase.appName || ''}`;
+        sourceCounts[key] = (sourceCounts[key] || 0) + 1;
+      }
+    });
+
+    const recentSources = Object.entries(sourceCounts)
+      .map(([key, count]) => {
+        const [source, appName] = key.split('|');
+        return { source, appName, count };
+      })
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
 
     return {
-      total: total.count,
-      unknown: unknown.count,
-      today: today.count,
+      total,
+      unknown,
+      today,
       recentSources
     };
   }
 
   // 导出短语
   async exportPhrases(format = 'json') {
-    const phrases = await this.db('phrases')
-      .leftJoin('phrase_tags', 'phrases.id', 'phrase_tags.phrase_id')
-      .leftJoin('tags', 'phrase_tags.tag_id', 'tags.id')
-      .select(
-        'phrases.*',
-        this.db.raw('GROUP_CONCAT(tags.name) as tag_names')
-      )
-      .groupBy('phrases.id')
-      .orderBy('phrases.timestamp', 'desc');
+    const phrases = this.data.phrases.map(phrase => ({
+      ...phrase,
+      tag_names: phrase.tags ? phrase.tags.map(t => t.name).join(',') : ''
+    }));
 
     if (format === 'csv') {
       const csvHeader = 'ID,短语,来源,应用名称,上下文,是否未知,标签,保存时间\n';
@@ -256,48 +214,31 @@ class Database {
     return JSON.stringify(phrases, null, 2);
   }
 
-  // 添加标签到短语
-  async addTagsToPhrase(phraseId, tags) {
-    for (const tagName of tags) {
-      // 获取或创建标签
-      let tag = await this.db('tags').where('name', tagName).first();
-      if (!tag) {
-        const [tagId] = await this.db('tags').insert({ name: tagName });
-        tag = { id: tagId, name: tagName };
-      }
-
-      // 创建关联
-      await this.db('phrase_tags')
-        .insert({ phrase_id: phraseId, tag_id: tag.id })
-        .onConflict(['phrase_id', 'tag_id'])
-        .ignore();
-    }
-  }
-
   // 获取所有标签
   async getTags() {
-    return await this.db('tags').orderBy('name');
+    const tagSet = new Set();
+    this.data.phrases.forEach(phrase => {
+      if (phrase.tags) {
+        phrase.tags.forEach(tag => tagSet.add(tag.name));
+      }
+    });
+    return Array.from(tagSet).map(name => ({ name, color: '#007bff' }));
   }
 
   // 获取设置
   async getSetting(key, defaultValue = null) {
-    const setting = await this.db('settings').where('key', key).first();
-    return setting ? JSON.parse(setting.value) : defaultValue;
+    return this.data.settings[key] !== undefined ? this.data.settings[key] : defaultValue;
   }
 
   // 设置配置
   async setSetting(key, value) {
-    await this.db('settings')
-      .insert({ key, value: JSON.stringify(value) })
-      .onConflict('key')
-      .merge({ value: JSON.stringify(value) });
+    this.data.settings[key] = value;
+    await this.saveData();
   }
 
   // 关闭数据库连接
   async close() {
-    if (this.db) {
-      await this.db.destroy();
-    }
+    await this.saveData();
   }
 }
 

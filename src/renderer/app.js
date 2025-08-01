@@ -82,8 +82,38 @@ function setupEventListeners() {
 // 设置IPC监听器
 function setupIpcListeners() {
     // 快速捕获
-    ipcRenderer.on('quick-capture', (event, text) => {
-        openPhraseModal(null, { text });
+    ipcRenderer.on('quick-capture', (event, data) => {
+        // 处理新的数据结构
+        const prefillData = { text: data.text };
+        
+        // 如果有窗口信息，添加到预填充数据中
+        if (data.windowInfo) {
+            const { appName, windowTitle, processPath, url } = data.windowInfo;
+            
+            // 构建来源信息
+            let source = '';
+            if (url) {
+                // 如果有URL（浏览器），使用URL作为来源
+                source = url;
+            } else if (processPath) {
+                // 如果有进程路径，使用文件路径作为来源
+                source = processPath;
+            } else if (appName) {
+                // 否则使用应用名称
+                source = appName;
+            }
+            
+            if (source) {
+                prefillData.source = source;
+            }
+            
+            // 如果有窗口标题，可以作为额外的上下文信息
+            if (windowTitle && windowTitle !== appName) {
+                prefillData.context = windowTitle;
+            }
+        }
+        
+        openPhraseModal(null, prefillData);
         showToast('已捕获文本，请完善信息后保存', 'success');
     });
 
@@ -394,6 +424,20 @@ function openPhraseModal(phraseId = null, prefillData = {}) {
                 if (phraseTextElement) {
                     phraseTextElement.value = prefillData.text;
                     phraseTextElement.focus();
+                }
+            }
+            
+            if (prefillData.source) {
+                const phraseSourceElement = document.getElementById('phraseSource');
+                if (phraseSourceElement) {
+                    phraseSourceElement.value = prefillData.source;
+                }
+            }
+            
+            if (prefillData.context) {
+                const phraseContextElement = document.getElementById('phraseContext');
+                if (phraseContextElement) {
+                    phraseContextElement.value = prefillData.context;
                 }
             }
         }, 100);
