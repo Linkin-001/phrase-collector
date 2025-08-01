@@ -31,7 +31,7 @@ html, body {
 
 /* 侧边栏样式 */
 .bg-light {
-    background-color: #f8f9fa !important;
+    background-color: #7abcff !important;
 }
 
 .card {
@@ -56,7 +56,6 @@ html, body {
 }
 
 .phrase-card:hover {
-    margin-top: 5px;
     box-shadow: 0 2px 8px rgba(0,123,255,0.15);
     transform: translateY(-1px);
 }

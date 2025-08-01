@@ -9,6 +9,13 @@ const {
 const path = require("path");
 const Database = require("./src/database");
 const { getSelectionText } = require("@xitanggg/node-selection");
+const electronReload = require('electron-reload');
+
+// 监听渲染进程相关的文件（如 HTML、CSS、JS 等）
+electronReload(path.join(__dirname, 'src'), { // 资源目录
+  electron: path.join(__dirname, 'node_modules', '.bin', 'electron'), // electron 可执行文件路径
+  hardResetMethod: 'reload' // 文件变化时刷新渲染进程（不重启主进程）
+});
 
 let mainWindow;
 let database;
