@@ -9,7 +9,7 @@ const {
 const path = require("path");
 const Database = require("./src/database");
 const { getSelectionText } = require("@xitanggg/node-selection");
-const { activeWindow } = require("get-windows");
+
 
 // 只在开发环境中加载 electron-reload
 if (process.env.NODE_ENV === 'development' || !app.isPackaged) {
@@ -61,31 +61,16 @@ const registerGlobalShortcuts = () => {
       // 直接调用三方库
       const selectedText = getSelectionText();
 
-      // 获取活动窗口信息
-      let windowInfo = null;
-      try {
-        const activeWin = await activeWindow();
-        if (activeWin) {
-          windowInfo = {
-            appName: activeWin.owner?.name || 'Unknown',
-            windowTitle: activeWin.title || '',
-            processPath: activeWin.owner?.path || '',
-            url: activeWin.url || null // 浏览器URL（仅在macOS上支持）
-          };
-        }
-      } catch (winError) {
-        console.error("获取窗口信息失败:", winError);
-      }
+      // 窗口信息功能已移除
 
       // 显示窗口
       mainWindow.show();
       mainWindow.focus();
 
       if (selectedText && selectedText.trim()) {
-        // 发送剪贴板内容和窗口信息到渲染进程
+        // 发送剪贴板内容到渲染进程
         mainWindow.webContents.send("quick-capture", {
-          text: selectedText.trim(),
-          windowInfo: windowInfo
+          text: selectedText.trim()
         });
       } else {
         // 如果剪贴板为空，显示提示

@@ -95,14 +95,11 @@ class Database {
 
   // 添加短语
   async addPhrase(phraseData) {
-    const { text, source, appName, selectionContext, isUnknown = false, tags = [], metadata = {} } = phraseData;
+    const { text, isUnknown = false, tags = [], metadata = {} } = phraseData;
     
     const phrase = {
       id: this.data.nextId++,
       text,
-      source,
-      appName,
-      selectionContext,
       isUnknown,
       tags: tags.map(tagName => ({ name: tagName, color: '#007bff' })),
       metadata,
@@ -122,12 +119,9 @@ class Database {
     if (phraseIndex === -1) return false;
 
     const phrase = this.data.phrases[phraseIndex];
-    const { text, source, appName, selectionContext, isUnknown, tags, metadata } = phraseData;
+    const { text, isUnknown, tags, metadata } = phraseData;
     
     if (text !== undefined) phrase.text = text;
-    if (source !== undefined) phrase.source = source;
-    if (appName !== undefined) phrase.appName = appName;
-    if (selectionContext !== undefined) phrase.selectionContext = selectionContext;
     if (isUnknown !== undefined) phrase.isUnknown = isUnknown;
     if (metadata !== undefined) phrase.metadata = metadata;
     if (tags !== undefined) {
@@ -203,10 +197,10 @@ class Database {
     }));
 
     if (format === 'csv') {
-      const csvHeader = 'ID,短语,来源,应用名称,上下文,是否未知,标签,保存时间\n';
+      const csvHeader = 'ID,短语,是否未知,标签,保存时间\n';
       const csvRows = phrases.map(phrase => {
         const tags = phrase.tag_names || '';
-        return `${phrase.id},"${phrase.text}","${phrase.source || ''}","${phrase.appName || ''}","${phrase.selectionContext || ''}",${phrase.isUnknown ? '是' : '否'},"${tags}","${phrase.timestamp}"`;
+        return `${phrase.id},"${phrase.text}",${phrase.isUnknown ? '是' : '否'},"${tags}","${phrase.timestamp}"`;
       }).join('\n');
       return csvHeader + csvRows;
     }

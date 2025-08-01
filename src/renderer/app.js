@@ -83,35 +83,8 @@ function setupEventListeners() {
 function setupIpcListeners() {
     // 快速捕获
     ipcRenderer.on('quick-capture', (event, data) => {
-        // 处理新的数据结构
+        // 只预填充文本内容
         const prefillData = { text: data.text };
-        
-        // 如果有窗口信息，添加到预填充数据中
-        if (data.windowInfo) {
-            const { appName, windowTitle, processPath, url } = data.windowInfo;
-            
-            // 构建来源信息
-            let source = '';
-            if (url) {
-                // 如果有URL（浏览器），使用URL作为来源
-                source = url;
-            } else if (processPath) {
-                // 如果有进程路径，使用文件路径作为来源
-                source = processPath;
-            } else if (appName) {
-                // 否则使用应用名称
-                source = appName;
-            }
-            
-            if (source) {
-                prefillData.source = source;
-            }
-            
-            // 如果有窗口标题，可以作为额外的上下文信息
-            if (windowTitle && windowTitle !== appName) {
-                prefillData.context = windowTitle;
-            }
-        }
         
         openPhraseModal(null, prefillData);
         showToast('已捕获文本，请完善信息后保存', 'success');
@@ -212,26 +185,8 @@ function createPhraseCard(phrase) {
     card.innerHTML = `
         <div class="phrase-text">${highlightedText}</div>
         
-        ${phrase.selectionContext ? `
-            <div class="phrase-context">
-                <i class="bi bi-quote"></i> ${phrase.selectionContext}
-            </div>
-        ` : ''}
-        
         <div class="phrase-meta d-flex justify-content-between align-items-center">
-            <div>
-                ${phrase.source ? `
-                    <a href="#" class="source-link" onclick="openSource('${phrase.source}')">
-                        <i class="bi bi-link-45deg"></i>
-                        ${truncateText(phrase.source, 50)}
-                    </a>
-                ` : ''}
-                ${phrase.appName ? `
-                    <span class="badge bg-secondary ms-2">
-                        <i class="bi bi-app"></i> ${phrase.appName}
-                    </span>
-                ` : ''}
-            </div>
+            <div></div>
             <span class="time-ago">${timeAgo}</span>
         </div>
         
@@ -426,20 +381,6 @@ function openPhraseModal(phraseId = null, prefillData = {}) {
                     phraseTextElement.focus();
                 }
             }
-            
-            if (prefillData.source) {
-                const phraseSourceElement = document.getElementById('phraseSource');
-                if (phraseSourceElement) {
-                    phraseSourceElement.value = prefillData.source;
-                }
-            }
-            
-            if (prefillData.context) {
-                const phraseContextElement = document.getElementById('phraseContext');
-                if (phraseContextElement) {
-                    phraseContextElement.value = prefillData.context;
-                }
-            }
         }, 100);
     }
     
@@ -453,9 +394,6 @@ async function loadPhraseForEdit(phraseId) {
         
         if (phrase) {
             document.getElementById('phraseText').value = phrase.text;
-            document.getElementById('phraseSource').value = phrase.source || '';
-            document.getElementById('phraseAppName').value = phrase.appName || '';
-            document.getElementById('phraseContext').value = phrase.selectionContext || '';
             document.getElementById('phraseIsUnknown').checked = phrase.isUnknown;
             
             if (phrase.tags) {
@@ -477,9 +415,6 @@ async function savePhrase() {
     
     const phraseData = {
         text: document.getElementById('phraseText').value.trim(),
-        source: document.getElementById('phraseSource').value.trim(),
-        appName: document.getElementById('phraseAppName').value.trim(),
-        selectionContext: document.getElementById('phraseContext').value.trim(),
         isUnknown: document.getElementById('phraseIsUnknown').checked,
         tags: document.getElementById('phraseTags').value
             .split(',')
@@ -678,13 +613,9 @@ function showToast(message, type = 'info') {
     elements.toast.show();
 }
 
-function openSource(source) {
-    if (source.startsWith('http')) {
-        require('electron').shell.openExternal(source);
-    } else {
-        showToast('无法打开此来源', 'warning');
-    }
-}
+
+
+
 
 // 全局函数（供HTML调用）
 window.editPhrase = editPhrase;
@@ -693,4 +624,3 @@ window.toggleUnknown = toggleUnknown;
 window.deletePhrase = deletePhrase;
 window.filterByTag = filterByTag;
 window.changePage = changePage;
-window.openSource = openSource;

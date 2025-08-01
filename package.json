@@ -29,8 +29,7 @@
     "@xitanggg/node-selection": "^1.3.0",
     "electron-reload": "^2.0.0-alpha.1",
     "electron-selected-text": "^1.1.2",
-    "electron-squirrel-startup": "^1.0.1",
-    "get-windows": "^9.2.0"
+    "electron-squirrel-startup": "^1.0.1"
   },
   "build": {
     "appId": "com.drawspace.phrase.collector",
