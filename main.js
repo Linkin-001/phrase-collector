@@ -180,7 +180,7 @@ const setApplicationMenu = () => {
   const menu = Menu.buildFromTemplate(template);
   Menu.setApplicationMenu(menu);
 };
-
+if (require('electron-squirrel-startup')) app.quit();
 // 应用准备就绪
 app.whenReady().then(async () => {
   // 初始化数据库
