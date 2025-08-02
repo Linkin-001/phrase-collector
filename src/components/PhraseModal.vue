@@ -54,7 +54,7 @@
                 id="phraseTags"
                 v-model="tagInput"
                 @keydown.enter.prevent="addTag"
-                @keydown.comma.prevent="addTag"
+                @keydown="(e) => e.key === ',' && (e.preventDefault(), addTag())"
                 type="text" 
                 class="form-control" 
                 placeholder="输入标签后按回车或逗号添加"

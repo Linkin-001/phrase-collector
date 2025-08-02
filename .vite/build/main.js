@@ -1,1 +1,184 @@
-"use strict";const{app:l,BrowserWindow:c,globalShortcut:d,clipboard:m,ipcMain:o,Menu:s,dialog:g,shell:y}=require("electron"),r=require("path"),h=require(r.join(__dirname,"database")),{getSelectionText:p}=require("@xitanggg/node-selection");require("electron-squirrel-startup")&&l.quit();let e,n;const i=()=>{e=new c({width:1200,height:800,minWidth:800,minHeight:600,webPreferences:{nodeIntegration:!1,contextIsolation:!0,preload:r.join(__dirname,"preload.js")},icon:r.join(__dirname,"../assets/icon.svg"),show:!1}),e.loadFile(r.join(__dirname,"../renderer/main_window/index.html")),e.once("ready-to-show",()=>{e.show()}),process.env.NODE_ENV==="development"&&e.webContents.openDevTools(),e.on("closed",()=>{l.quit()})},b=()=>{d.register("CommandOrControl+Q",async()=>{try{const t=p();e.show(),e.focus(),t&&t.trim()?e.webContents.send("quick-capture",{text:t.trim()}):e.webContents.send("quick-capture-empty")}catch(t){console.error("快速捕获失败:",t),e.show(),e.focus(),e.webContents.send("quick-capture-empty")}})},w=()=>{const t=[{label:"文件",submenu:[{label:"新建短语",click:()=>{e.webContents.send("new-phrase")}},{label:"导出数据",click:()=>{e.webContents.send("export-data")}},{type:"separator"},{label:"退出",click:()=>{l.quit()}}]},{label:"编辑",submenu:[{label:"撤销",role:"undo"},{label:"重做",role:"redo"},{type:"separator"},{label:"剪切",role:"cut"},{label:"复制",role:"copy"},{label:"粘贴",role:"paste"}]},{label:"查看",submenu:[{label:"重新加载",role:"reload"},{label:"强制重新加载",role:"forceReload"},{label:"开发者工具",role:"toggleDevTools"},{type:"separator"},{label:"实际大小",role:"resetZoom"},{label:"放大",role:"zoomIn"},{label:"缩小",role:"zoomOut"},{type:"separator"},{label:"全屏",role:"togglefullscreen"}]},{label:"帮助",submenu:[{label:"关于",click:()=>{e.webContents.send("show-about")}}]}],a=s.buildFromTemplate(t);s.setApplicationMenu(a)};l.whenReady().then(async()=>{n=new h,await n.init(),i(),b(),w(),l.on("activate",()=>{c.getAllWindows().length===0&&i()})});l.on("window-all-closed",()=>{l.quit()});l.on("will-quit",()=>{d.unregisterAll()});o.handle("get-phrases",async(t,a={})=>await n.getPhrases(a));o.handle("add-phrase",async(t,a)=>await n.addPhrase(a));o.handle("update-phrase",async(t,a,u)=>await n.updatePhrase(a,u));o.handle("delete-phrase",async(t,a)=>await n.deletePhrase(a));o.handle("search-phrases",async(t,a)=>await n.searchPhrases(a));o.handle("get-phrase-stats",async()=>await n.getPhraseStats());o.handle("export-phrases",async(t,a)=>await n.exportPhrases(a));
+"use strict";
+const {
+  app,
+  BrowserWindow,
+  globalShortcut,
+  clipboard,
+  ipcMain,
+  Menu,
+  dialog,
+  shell
+} = require("electron");
+const path = require("path");
+const Database = require(path.join(__dirname, "database"));
+const { getSelectionText } = require("@xitanggg/node-selection");
+if (require("electron-squirrel-startup")) {
+  app.quit();
+}
+let mainWindow;
+let database;
+const createWindow = () => {
+  mainWindow = new BrowserWindow({
+    width: 1200,
+    height: 800,
+    minWidth: 800,
+    minHeight: 600,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      preload: path.join(__dirname, "preload.js")
+    },
+    icon: path.join(__dirname, "../assets/icon.svg"),
+    show: false
+  });
+  {
+    mainWindow.loadURL("http://localhost:3000");
+  }
+  mainWindow.once("ready-to-show", () => {
+    mainWindow.show();
+  });
+  if (process.env.NODE_ENV === "development") {
+    mainWindow.webContents.openDevTools();
+  }
+  mainWindow.on("closed", () => {
+    app.quit();
+  });
+};
+const registerGlobalShortcuts = () => {
+  globalShortcut.register("CommandOrControl+Q", async () => {
+    try {
+      const selectedText = getSelectionText();
+      mainWindow.show();
+      mainWindow.focus();
+      if (selectedText && selectedText.trim()) {
+        mainWindow.webContents.send("quick-capture", {
+          text: selectedText.trim()
+        });
+      } else {
+        mainWindow.webContents.send("quick-capture-empty");
+      }
+    } catch (error) {
+      console.error("快速捕获失败:", error);
+      mainWindow.show();
+      mainWindow.focus();
+      mainWindow.webContents.send("quick-capture-empty");
+    }
+  });
+};
+const setApplicationMenu = () => {
+  const template = [
+    {
+      label: "文件",
+      submenu: [
+        {
+          label: "新建短语",
+          click: () => {
+            mainWindow.webContents.send("new-phrase");
+          }
+        },
+        {
+          label: "导出数据",
+          click: () => {
+            mainWindow.webContents.send("export-data");
+          }
+        },
+        { type: "separator" },
+        {
+          label: "退出",
+          click: () => {
+            app.quit();
+          }
+        }
+      ]
+    },
+    {
+      label: "编辑",
+      submenu: [
+        { label: "撤销", role: "undo" },
+        {
+          label: "重做",
+          role: "redo"
+        },
+        { type: "separator" },
+        { label: "剪切", role: "cut" },
+        { label: "复制", role: "copy" },
+        { label: "粘贴", role: "paste" }
+      ]
+    },
+    {
+      label: "查看",
+      submenu: [
+        {
+          label: "重新加载",
+          role: "reload"
+        },
+        {
+          label: "强制重新加载",
+          role: "forceReload"
+        },
+        { label: "开发者工具", role: "toggleDevTools" },
+        { type: "separator" },
+        {
+          label: "实际大小",
+          role: "resetZoom"
+        },
+        { label: "放大", role: "zoomIn" },
+        { label: "缩小", role: "zoomOut" },
+        { type: "separator" },
+        { label: "全屏", role: "togglefullscreen" }
+      ]
+    },
+    {
+      label: "帮助",
+      submenu: [
+        {
+          label: "关于",
+          click: () => {
+            mainWindow.webContents.send("show-about");
+          }
+        }
+      ]
+    }
+  ];
+  const menu = Menu.buildFromTemplate(template);
+  Menu.setApplicationMenu(menu);
+};
+app.whenReady().then(async () => {
+  database = new Database();
+  await database.init();
+  createWindow();
+  registerGlobalShortcuts();
+  setApplicationMenu();
+  app.on("activate", () => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+      createWindow();
+    }
+  });
+});
+app.on("window-all-closed", () => {
+  app.quit();
+});
+app.on("will-quit", () => {
+  globalShortcut.unregisterAll();
+});
+ipcMain.handle("get-phrases", async (event, options = {}) => {
+  return await database.getPhrases(options);
+});
+ipcMain.handle("add-phrase", async (event, phraseData) => {
+  return await database.addPhrase(phraseData);
+});
+ipcMain.handle("update-phrase", async (event, id, phraseData) => {
+  return await database.updatePhrase(id, phraseData);
+});
+ipcMain.handle("delete-phrase", async (event, id) => {
+  return await database.deletePhrase(id);
+});
+ipcMain.handle("search-phrases", async (event, query) => {
+  return await database.searchPhrases(query);
+});
+ipcMain.handle("get-phrase-stats", async () => {
+  return await database.getPhraseStats();
+});
+ipcMain.handle("export-phrases", async (event, format) => {
+  return await database.exportPhrases(format);
+});

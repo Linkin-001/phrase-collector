@@ -1,7 +1,9 @@
 /* 全局样式 */
-html, body {
+html,
+body {
+    font-size: 14px;
     height: 100%;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 #app {
@@ -10,7 +12,7 @@ html, body {
 
 /* 导航栏样式 */
 .navbar {
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .navbar-brand {
@@ -20,13 +22,13 @@ html, body {
 /* 搜索框样式 */
 #searchInput {
     border: none;
-    background: rgba(255,255,255,0.9);
+    background: rgba(255, 255, 255, 0.9);
     transition: all 0.3s ease;
 }
 
 #searchInput:focus {
     background: white;
-    box-shadow: 0 0 0 0.2rem rgba(255,255,255,0.25);
+    box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.25);
 }
 
 /* 侧边栏样式 */
@@ -36,17 +38,16 @@ html, body {
 
 .card {
     border: none;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
 }
 
 .card:hover {
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 /* 短语卡片样式 */
 .phrase-card {
-    border: 1px solid #e9ecef;
     border-radius: 8px;
     padding: 1rem;
     margin-bottom: 1rem;
@@ -56,7 +57,7 @@ html, body {
 }
 
 .phrase-card:hover {
-    box-shadow: 0 2px 8px rgba(0,123,255,0.15);
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.15);
     transform: translateY(-1px);
 }
 
@@ -104,7 +105,6 @@ html, body {
 .phrase-actions {
     display: flex;
     gap: 0.5rem;
-    margin-top: 0.5rem;
 }
 
 .phrase-actions .btn {
@@ -131,7 +131,7 @@ html, body {
 }
 
 .tag.active {
-    box-shadow: 0 0 0 2px rgba(255,255,255,0.5);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
 }
 
 /* 未知状态标记 */
@@ -187,7 +187,7 @@ html, body {
 .modal-content {
     border: none;
     border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
 .modal-header {
@@ -204,12 +204,12 @@ html, body {
 /* 表单样式 */
 .form-control:focus {
     border-color: #007bff;
-    box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
 .form-select:focus {
     border-color: #007bff;
-    box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
 /* 按钮样式 */
@@ -233,15 +233,15 @@ html, body {
 }
 
 .btn-outline-light:hover {
-    background: rgba(255,255,255,0.1);
-    border-color: rgba(255,255,255,0.3);
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
 }
 
 /* Toast 通知样式 */
 .toast {
     border: none;
     border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .toast-header {
@@ -269,19 +269,19 @@ html, body {
     .navbar-brand {
         font-size: 1rem;
     }
-    
+
     .phrase-card {
         padding: 0.75rem;
     }
-    
+
     .phrase-text {
         font-size: 1rem;
     }
-    
+
     .col-md-3 {
         display: none;
     }
-    
+
     .col-md-9 {
         flex: 0 0 100%;
         max-width: 100%;
@@ -350,7 +350,7 @@ html, body {
 .phrase-card.selected {
     border-color: #007bff;
     background: linear-gradient(135deg, #e3f2fd 0%, #f8f9fa 100%);
-    box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
 }
 
 /* 工具提示样式 */
@@ -359,7 +359,7 @@ html, body {
 }
 
 .tooltip-inner {
-    background: rgba(0,0,0,0.9);
+    background: rgba(0, 0, 0, 0.9);
     border-radius: 6px;
     padding: 0.5rem 0.75rem;
 }
@@ -369,9 +369,9 @@ kbd {
     background: linear-gradient(135deg, #f8f9fa, #e9ecef);
     border: 1px solid #adb5bd;
     border-radius: 4px;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
     color: #495057;
-    font-family: 'Courier New', monospace;
+    font-family: "Courier New", monospace;
     font-size: 0.8rem;
     font-weight: 600;
     padding: 0.2rem 0.4rem;
@@ -385,7 +385,7 @@ kbd {
 }
 
 .context-preview::after {
-    content: '';
+    content: "";
     position: absolute;
     bottom: 0;
     left: 0;
@@ -404,12 +404,12 @@ kbd {
     font-size: 0.8rem;
     padding: 0.25rem 0.5rem;
     border-radius: 4px;
-    background: rgba(0,123,255,0.1);
+    background: rgba(0, 123, 255, 0.1);
     transition: all 0.2s ease;
 }
 
 .source-link:hover {
-    background: rgba(0,123,255,0.2);
+    background: rgba(0, 123, 255, 0.2);
     color: #0056b3;
     text-decoration: none;
 }
@@ -440,7 +440,7 @@ kbd {
 
 .drop-zone {
     border: 2px dashed #007bff;
-    background: rgba(0,123,255,0.1);
+    background: rgba(0, 123, 255, 0.1);
     border-radius: 8px;
     padding: 2rem;
     text-align: center;
@@ -449,6 +449,6 @@ kbd {
 }
 
 .drop-zone.active {
-    background: rgba(0,123,255,0.2);
+    background: rgba(0, 123, 255, 0.2);
     border-color: #0056b3;
 }
