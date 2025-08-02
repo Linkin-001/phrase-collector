@@ -96,12 +96,6 @@ function setupIpcListeners() {
         showToast('未检测到选中文本，请手动输入或先复制文本到剪贴板', 'warning');
     });
 
-    // 聚焦搜索
-    ipcRenderer.on('focus-search', () => {
-        elements.searchInput.focus();
-        elements.searchInput.select();
-    });
-
     // 新建短语
     ipcRenderer.on('new-phrase', () => {
         openPhraseModal();
@@ -512,26 +506,6 @@ async function exportData() {
 
 // 键盘快捷键处理
 function handleKeyboardShortcuts(event) {
-    if (event.ctrlKey || event.metaKey) {
-        switch (event.key) {
-            case 'n':
-                event.preventDefault();
-                openPhraseModal();
-                break;
-            case 'e':
-                event.preventDefault();
-                elements.exportModal.show();
-                break;
-            case 'f':
-                if (event.shiftKey) {
-                    event.preventDefault();
-                    elements.searchInput.focus();
-                    elements.searchInput.select();
-                }
-                break;
-        }
-    }
-    
     if (event.key === 'Escape') {
         // 关闭模态框
         elements.phraseModal.hide();

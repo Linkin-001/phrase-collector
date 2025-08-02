@@ -51,6 +51,11 @@ const createWindow = () => {
   if (process.env.NODE_ENV === "development") {
     mainWindow.webContents.openDevTools();
   }
+
+  // 窗口关闭时直接退出应用
+  mainWindow.on('closed', () => {
+    app.quit();
+  });
 };
 
 // 注册全局快捷键
@@ -83,22 +88,6 @@ const registerGlobalShortcuts = () => {
       mainWindow.webContents.send("quick-capture-empty");
     }
   });
-
- 
-
-  // Ctrl+Alt+Q 直接打开窗口
-  globalShortcut.register("CommandOrControl+Alt+Q", () => {
-    mainWindow.show();
-    mainWindow.focus();
-    mainWindow.webContents.send("quick-capture-empty");
-  });
-
-  // Ctrl+Shift+F 聚焦搜索框
-  globalShortcut.register("CommandOrControl+Shift+F", () => {
-    mainWindow.show();
-    mainWindow.focus();
-    mainWindow.webContents.send("focus-search");
-  });
 };
 
 // 设置应用菜单
@@ -109,14 +98,12 @@ const setApplicationMenu = () => {
       submenu: [
         {
           label: "新建短语",
-          accelerator: "CommandOrControl+N",
           click: () => {
             mainWindow.webContents.send("new-phrase");
           },
         },
         {
           label: "导出数据",
-          accelerator: "CommandOrControl+E",
           click: () => {
             mainWindow.webContents.send("export-data");
           },
@@ -124,7 +111,6 @@ const setApplicationMenu = () => {
         { type: "separator" },
         {
           label: "退出",
-          accelerator: process.platform === "darwin" ? "Cmd+Q" : "Ctrl+Q",
           click: () => {
             app.quit();
           },
@@ -134,16 +120,15 @@ const setApplicationMenu = () => {
     {
       label: "编辑",
       submenu: [
-        { label: "撤销", accelerator: "CommandOrControl+Z", role: "undo" },
+        { label: "撤销", role: "undo" },
         {
           label: "重做",
-          accelerator: "Shift+CommandOrControl+Z",
           role: "redo",
         },
         { type: "separator" },
-        { label: "剪切", accelerator: "CommandOrControl+X", role: "cut" },
-        { label: "复制", accelerator: "CommandOrControl+C", role: "copy" },
-        { label: "粘贴", accelerator: "CommandOrControl+V", role: "paste" },
+        { label: "剪切", role: "cut" },
+        { label: "复制", role: "copy" },
+        { label: "粘贴", role: "paste" },
       ],
     },
     {
@@ -151,25 +136,22 @@ const setApplicationMenu = () => {
       submenu: [
         {
           label: "重新加载",
-          accelerator: "CommandOrControl+R",
           role: "reload",
         },
         {
           label: "强制重新加载",
-          accelerator: "CommandOrControl+Shift+R",
           role: "forceReload",
         },
-        { label: "开发者工具", accelerator: "F12", role: "toggleDevTools" },
+        { label: "开发者工具", role: "toggleDevTools" },
         { type: "separator" },
         {
           label: "实际大小",
-          accelerator: "CommandOrControl+0",
           role: "resetZoom",
         },
-        { label: "放大", accelerator: "CommandOrControl+Plus", role: "zoomIn" },
-        { label: "缩小", accelerator: "CommandOrControl+-", role: "zoomOut" },
+        { label: "放大", role: "zoomIn" },
+        { label: "缩小", role: "zoomOut" },
         { type: "separator" },
-        { label: "全屏", accelerator: "F11", role: "togglefullscreen" },
+        { label: "全屏", role: "togglefullscreen" },
       ],
     },
     {
@@ -209,9 +191,7 @@ app.whenReady().then(async () => {
 
 // 所有窗口关闭时
 app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") {
-    app.quit();
-  }
+  app.quit();
 });
 
 // 应用退出前

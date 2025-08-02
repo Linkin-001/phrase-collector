@@ -24,7 +24,7 @@
                         <span class="input-group-text">
                             <i class="bi bi-search"></i>
                         </span>
-                        <input type="text" id="searchInput" class="form-control" placeholder="搜索短语... (Ctrl+Shift+F)">
+                        <input type="text" id="searchInput" class="form-control" placeholder="搜索短语...">
                         <button class="btn btn-outline-light" type="button" id="clearSearch">
                             <i class="bi bi-x"></i>
                         </button>
@@ -33,10 +33,10 @@
 
                 <!-- 工具按钮 -->
                 <div class="d-flex gap-2">
-                    <button class="btn btn-outline-light" id="addPhraseBtn" title="新建短语 (Ctrl+N)">
+                    <button class="btn btn-outline-light" id="addPhraseBtn" title="新建短语">
                         <i class="bi bi-plus-lg"></i>
                     </button>
-                    <button class="btn btn-outline-light" id="exportBtn" title="导出数据 (Ctrl+E)">
+                    <button class="btn btn-outline-light" id="exportBtn" title="导出数据">
                         <i class="bi bi-download"></i>
                     </button>
                     <button class="btn btn-outline-light" id="settingsBtn" title="设置">
@@ -129,7 +129,7 @@
                             <div id="emptyState" class="text-center py-5 d-none">
                                 <i class="bi bi-collection display-1 text-muted"></i>
                                 <h4 class="text-muted mt-3">还没有收集任何短语</h4>
-                                <p class="text-muted">使用 Ctrl+Alt+Q 快速捕获选中的文本，或点击上方的 + 按钮手动添加</p>
+                                <p class="text-muted">使用 Ctrl+Q 快速捕获选中的文本，或点击上方的 + 按钮手动添加</p>
                             </div>
                         </div>
 
@@ -228,12 +228,7 @@
                     <div class="mb-3">
                         <h6>快捷键</h6>
                         <ul class="list-unstyled">
-                            <li><kbd>Ctrl+Q</kbd> - 快速捕获剪贴板内容</li>
-                            <li><kbd>Alt+Q</kbd> - 滑动取词（智能获取选中文本）</li>
-                            <li><kbd>Ctrl+Alt+Q</kbd> - 打开短语收集器</li>
-                            <li><kbd>Ctrl+Shift+F</kbd> - 聚焦搜索框</li>
-                            <li><kbd>Ctrl+N</kbd> - 新建短语</li>
-                            <li><kbd>Ctrl+E</kbd> - 导出数据</li>
+                            <li><kbd>Ctrl+Q</kbd> - 快速捕获选中文本</li>
                         </ul>
                     </div>
                     <div class="mb-3">
