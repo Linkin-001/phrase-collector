@@ -84,8 +84,14 @@ class Database {
     const offset = (page - 1) * limit;
     const paginatedPhrases = phrases.slice(offset, offset + limit);
 
+    // 转换tags格式以保持前端一致性
+    const formattedPhrases = paginatedPhrases.map(phrase => ({
+      ...phrase,
+      tags: phrase.tags ? phrase.tags.map(tag => typeof tag === 'string' ? tag : tag.name) : []
+    }));
+
     return {
-      data: paginatedPhrases,
+      data: formattedPhrases,
       total,
       page,
       limit,
@@ -96,7 +102,6 @@ class Database {
   // 添加短语
   async addPhrase(phraseData) {
     const { text, isUnknown = false, tags = [], metadata = {} } = phraseData;
-    
     // 确保tags是数组
     const safeTags = Array.isArray(tags) ? tags : [];
     

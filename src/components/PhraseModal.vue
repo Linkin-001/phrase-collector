@@ -148,7 +148,9 @@ export default {
         formData.text = props.phrase.text || ''
         formData.translation = props.phrase.translation || ''
         formData.notes = props.phrase.notes || ''
-        formData.tags = props.phrase.tags ? [...props.phrase.tags] : []
+        // 确保tags始终为字符串数组
+        formData.tags = props.phrase.tags ? 
+          props.phrase.tags.map(tag => typeof tag === 'string' ? tag : tag.name) : []
         formData.isUnknown = props.phrase.isUnknown || false
       } else {
         formData.text = props.capturedText || ''
@@ -176,12 +178,13 @@ export default {
         return
       }
       
+      // 创建纯JavaScript对象，避免Vue响应式对象序列化问题
       const phraseData = {
         text: formData.text.trim(),
         translation: formData.translation.trim() || null,
         notes: formData.notes.trim() || null,
-        tags: formData.tags || [],
-        isUnknown: formData.isUnknown,
+        tags: [...(formData.tags || [])], // 创建新数组避免响应式引用
+        isUnknown: !!formData.isUnknown, // 确保是布尔值
         timestamp: props.phrase ? props.phrase.timestamp : new Date().toISOString()
       }
       

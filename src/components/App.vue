@@ -405,10 +405,13 @@ export default {
         const result = await electronAPI.getPhrases()
         console.log('获取到的短语数据:', result)
         
-        if (Array.isArray(result)) {
+        // 修复：正确处理数据库返回的数据格式
+        if (result && Array.isArray(result.data)) {
+          phrases.value = result.data
+        } else if (Array.isArray(result)) {
           phrases.value = result
         } else {
-          console.warn('获取的数据不是数组:', result)
+          console.warn('获取的数据格式不正确:', result)
           phrases.value = []
         }
         
