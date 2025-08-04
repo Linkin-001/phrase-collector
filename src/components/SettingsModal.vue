@@ -2,52 +2,33 @@
   <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">设置</h5>
-          <button 
-            type="button" 
-            class="btn-close" 
-            @click="$emit('close')"
-          ></button>
-        </div>
+
         <div class="modal-body">
           <!-- 标签页导航 -->
           <ul class="nav nav-tabs" role="tablist">
             <li class="nav-item" role="presentation">
-              <button 
-                class="nav-link" 
-                :class="{ active: activeTab === 'shortcuts' }"
-                @click="activeTab = 'shortcuts'"
-                type="button"
-              >
+              <button class="nav-link" :class="{ active: activeTab === 'shortcuts' }" @click="activeTab = 'shortcuts'"
+                type="button">
                 <i class="bi bi-keyboard me-1"></i>
                 快捷键
               </button>
             </li>
             <li class="nav-item" role="presentation">
-              <button 
-                class="nav-link" 
-                :class="{ active: activeTab === 'storage' }"
-                @click="activeTab = 'storage'"
-                type="button"
-              >
+              <button class="nav-link" :class="{ active: activeTab === 'storage' }" @click="activeTab = 'storage'"
+                type="button">
                 <i class="bi bi-database me-1"></i>
                 数据存储
               </button>
             </li>
             <li class="nav-item" role="presentation">
-              <button 
-                class="nav-link" 
-                :class="{ active: activeTab === 'about' }"
-                @click="activeTab = 'about'"
-                type="button"
-              >
+              <button class="nav-link" :class="{ active: activeTab === 'about' }" @click="activeTab = 'about'"
+                type="button">
                 <i class="bi bi-info-circle me-1"></i>
                 关于
               </button>
             </li>
           </ul>
-          
+
           <!-- 标签页内容 -->
           <div class="tab-content mt-3">
             <!-- 快捷键标签页 -->
@@ -68,50 +49,31 @@
                       <td><kbd>Ctrl+Q</kbd></td>
                       <td>捕获当前选中的文本并添加到短语库</td>
                     </tr>
-                    <tr>
-                      <td>新建短语</td>
-                      <td><kbd>Ctrl+N</kbd></td>
-                      <td>打开新建短语对话框</td>
-                    </tr>
-                    <tr>
-                      <td>搜索</td>
-                      <td><kbd>Ctrl+F</kbd></td>
-                      <td>聚焦到搜索框</td>
-                    </tr>
+
                   </tbody>
                 </table>
               </div>
-              
+
               <div class="alert alert-info">
                 <i class="bi bi-info-circle me-2"></i>
                 快捷键在应用运行时全局有效，即使应用在后台也可以使用
               </div>
             </div>
-            
+
             <!-- 数据存储标签页 -->
             <div v-if="activeTab === 'storage'" class="tab-pane fade show active">
               <h6>数据库信息</h6>
               <div class="mb-3">
                 <label class="form-label">数据库位置</label>
                 <div class="input-group">
-                  <input 
-                    type="text" 
-                    class="form-control" 
-                    :value="dbPath" 
-                    readonly
-                  >
-                  <button 
-                    class="btn btn-outline-secondary" 
-                    type="button"
-                    @click="openDbLocation"
-                    title="在文件管理器中打开"
-                  >
+                  <input type="text" class="form-control" :value="dbPath" readonly>
+                  <button class="btn btn-outline-secondary" type="button" @click="openDbLocation" title="在文件管理器中打开">
                     <i class="bi bi-folder2-open"></i>
                   </button>
                 </div>
                 <div class="form-text">数据存储在本地 SQLite 数据库中</div>
               </div>
-              
+
               <div class="mb-3">
                 <label class="form-label">数据统计</label>
                 <div class="row">
@@ -141,21 +103,23 @@
                   </div>
                 </div>
               </div>
-              
+
               <div class="alert alert-warning">
                 <i class="bi bi-exclamation-triangle me-2"></i>
                 建议定期导出数据进行备份
               </div>
             </div>
-            
+
             <!-- 关于标签页 -->
             <div v-if="activeTab === 'about'" class="tab-pane fade show active">
               <div class="text-center mb-4">
-                <i class="bi bi-collection display-4 text-primary mb-3"></i>
+                <!-- <i class="bi bi-collection display-4 text-primary mb-3"> -->
+                <img src="../../assets/icon.svg" alt="Icon" width="60" height="60" />
+                <!-- </i> -->
                 <h4>Phrase Collector</h4>
                 <p class="text-muted">短语收集器</p>
               </div>
-              
+
               <div class="row">
                 <div class="col-md-6">
                   <h6>应用信息</h6>
@@ -171,11 +135,11 @@
                       </tr>
                       <tr>
                         <td>Electron</td>
-                        <td><code>Unknown</code></td>
+                        <td><code>32.2.0</code></td>
                       </tr>
                       <tr>
                         <td>Node.js</td>
-                        <td><code>Unknown</code></td>
+                        <td><code>18.20.8</code></td>
                       </tr>
                     </tbody>
                   </table>
@@ -190,14 +154,14 @@
                   </ul>
                 </div>
               </div>
-              
+
               <div class="mt-4">
                 <h6>功能特性</h6>
                 <div class="row">
                   <div class="col-md-6">
                     <ul class="list-unstyled">
                       <li><i class="bi bi-lightning text-warning me-1"></i> 快速文本捕获</li>
-                      <li><i class="bi bi-search text-info me-1"></i> 智能搜索过滤</li>
+                      <li><i class="bi bi-search text-info me-1"></i> 智能搜索过滤高亮</li>
                       <li><i class="bi bi-tags text-primary me-1"></i> 标签分类管理</li>
                     </ul>
                   </div>
@@ -210,21 +174,18 @@
                   </div>
                 </div>
               </div>
-              
+
               <div class="text-center mt-4 pt-3 border-top">
                 <p class="text-muted small mb-0">
-                  © 2024 Phrase Collector. 基于 Electron 构建的桌面应用程序。
+                  © 2025 Phrase Collector. 基于 Electron 构建的桌面应用程序。 
+                  <br/>Designed By Shi Jie
                 </p>
               </div>
             </div>
           </div>
         </div>
-        <div class="modal-footer">
-          <button 
-            type="button" 
-            class="btn btn-secondary" 
-            @click="$emit('close')"
-          >
+        <div class="modal-footer justify-content-center">
+          <button type="button" class="btn btn-outline-secondary" @click="$emit('close')">
             关闭
           </button>
         </div>
@@ -234,7 +195,7 @@
 </template>
 
 <script>
-import { ref, reactive, onMounted } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 
 export default {
   name: 'SettingsModal',
@@ -243,18 +204,18 @@ export default {
     const electronAPI = window.electronAPI
     const activeTab = ref('shortcuts')
     const dbPath = ref('加载中...')
-    
+
     const stats = reactive({
       total: 0,
       unknown: 0,
       dbSize: 0
     })
-    
+
     const appVersion = ref('1.0.0')
     const buildVersion = ref('1.0.0')
     const electronVersion = ref(window.electronAPI?.versions?.electron || 'Unknown')
     const nodeVersion = ref(window.electronAPI?.versions?.node || 'Unknown')
-    
+
     const formatFileSize = (bytes) => {
       if (bytes === 0) return '0 B'
       const k = 1024
@@ -262,7 +223,7 @@ export default {
       const i = Math.floor(Math.log(bytes) / Math.log(k))
       return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
     }
-    
+
     const openDbLocation = async () => {
       try {
         await electronAPI.openDbLocation()
@@ -270,7 +231,7 @@ export default {
         console.error('打开数据库位置失败:', error)
       }
     }
-    
+
     const loadAppInfo = async () => {
       try {
         const info = await electronAPI.getAppInfo()
@@ -287,11 +248,11 @@ export default {
         dbPath.value = '加载失败'
       }
     }
-    
+
     onMounted(() => {
       loadAppInfo()
     })
-    
+
     return {
       activeTab,
       dbPath,
@@ -316,6 +277,7 @@ export default {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -329,6 +291,7 @@ export default {
   from {
     transform: translateY(-50px);
   }
+
   to {
     transform: translateY(0);
   }
@@ -368,6 +331,11 @@ kbd {
 
 .card:hover {
   transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.list-unstyled {
+  line-height: 2rem;
+  display: block;
 }
 </style>

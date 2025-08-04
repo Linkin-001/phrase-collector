@@ -1,6 +1,6 @@
 <template>
-  <div class="col-md-6 col-lg-4">
-    <div class="card h-100 phrase-card" :class="{ 'border-warning': phrase.isUnknown }">
+  <div class="col-md-6 col-lg-6">
+    <div class="card  phrase-card" :class="{ 'border-warning': phrase.isUnknown }">
       <div class="card-body d-flex flex-column p-0">
         <div class="d-flex justify-content-between align-items-start mb-0">
           <div class="flex-grow-1">
@@ -16,12 +16,12 @@
 
         <div class="">
           <div v-if="phrase.tags && phrase.tags.length > 0" class="mb-2">
-            <span v-for="tag in phrase.tags" :key="tag" class="badge bg-secondary me-1 mb-1">
+            <span v-for="tag in phrase.tags" :key="tag" class="badge me-1 mb-1 tag-badge">
               {{ tag }}
             </span>
           </div>
 
-          <div class="d-flex justify-content-between align-items-center text-muted small">
+          <div class="d-flex justify-content-between align-items-center text-muted small phrase-action-container">
             <span style="font-size: 12px;">{{ formatDate(phrase.timestamp) }}</span>
 
             <div class="phrase-actions">
@@ -116,21 +116,36 @@ export default {
 </script>
 
 <style scoped>
+.tag-badge {
+  background-image: radial-gradient(circle at 13% 13%,
+      rgba(255, 221, 235, 0.8) 0%,
+      transparent 83%),
+    radial-gradient(circle at 89% 89%, rgba(187, 225, 250, 0.7) 0%, transparent 99%);
+  color: black;
+}
+
 .phrase-card {
   transition: all 0.2s ease;
   cursor: default;
-
   background-image: radial-gradient(circle at 87% 22%,
       rgba(255, 221, 235, 0.8) 0%,
       transparent 24%),
-    radial-gradient(circle at 90% 44%, rgba(187, 225, 250, 0.7) 0%, transparent 19%),
-    radial-gradient(circle at 78% 30%, rgba(255, 248, 225, 0.5) 0%, transparent 40%);
-  background-color: #f9f9f9;
+    radial-gradient(circle at 90% 53%, rgba(187, 225, 250, 0.7) 0%, transparent 43%),
+    radial-gradient(circle at 48% 32%, rgba(255, 248, 225, 0.5) 0%, transparent 81%)
 }
 
 .phrase-card:hover {
-  transform: translateY(-5px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+}
+
+.phrase-card:hover {
+
+  background-image: radial-gradient(circle at 57% 22%,
+      rgba(255, 221, 235, 0.8) 0%,
+      transparent 64%),
+    radial-gradient(circle at 100% 83%, rgba(187, 225, 250, 0.7) 0%, transparent 43%),
+    radial-gradient(circle at 18% 72%, rgba(255, 248, 225, 0.5) 0%, transparent 81%)
 }
 
 .phrase-text {
@@ -142,8 +157,14 @@ export default {
   display: -webkit-box;
   -webkit-line-clamp: 5;
   -webkit-box-orient: vertical;
-    border-left: 5px solid #ff399494;
-    padding-left: 0.5rem;
+  border-left: 5px solid #ff399494;
+  padding-left: 0.5rem;
+}
+
+.phrase-action-container {
+  display: block;
+  width: 100%;
+  height: 2rem;
 }
 
 .phrase-actions {
@@ -153,6 +174,11 @@ export default {
 
 .phrase-card:hover .phrase-actions {
   display: flex;
+}
+
+.phrase-actions .btn {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8rem;
 }
 
 :deep(mark) {
