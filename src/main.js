@@ -62,10 +62,12 @@ const createWindow = () => {
 // 注册全局快捷键
 const registerGlobalShortcuts = () => {
   // Ctrl+Q 快速获取用户鼠标选中文本
-  globalShortcut.register("CommandOrControl+Q", async () => {
+  const success = globalShortcut.register("CommandOrControl+Q", async () => {
+    console.log("Ctrl+Q 快捷键被触发");
     try {
       // 直接调用三方库
       const selectedText = getSelectionText();
+      console.log("获取到的选中文本:", selectedText);
 
       // 窗口信息功能已移除
 
@@ -74,11 +76,13 @@ const registerGlobalShortcuts = () => {
       mainWindow.focus();
 
       if (selectedText && selectedText.trim()) {
+        console.log("发送快速捕获事件，文本:", selectedText.trim());
         // 发送剪贴板内容到渲染进程
         mainWindow.webContents.send("quick-capture", {
           text: selectedText.trim()
         });
       } else {
+        console.log("没有选中文本，发送空捕获事件");
         // 如果剪贴板为空，显示提示
         mainWindow.webContents.send("quick-capture-empty");
       }
@@ -89,6 +93,12 @@ const registerGlobalShortcuts = () => {
       mainWindow.webContents.send("quick-capture-empty");
     }
   });
+  
+  if (success) {
+    console.log("全局快捷键 Ctrl+Q 注册成功");
+  } else {
+    console.error("全局快捷键 Ctrl+Q 注册失败");
+  }
 };
 
 // 设置应用菜单

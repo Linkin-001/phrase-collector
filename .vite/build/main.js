@@ -45,16 +45,20 @@ const createWindow = () => {
   });
 };
 const registerGlobalShortcuts = () => {
-  globalShortcut.register("CommandOrControl+Q", async () => {
+  const success = globalShortcut.register("CommandOrControl+Q", async () => {
+    console.log("Ctrl+Q 快捷键被触发");
     try {
       const selectedText = getSelectionText();
+      console.log("获取到的选中文本:", selectedText);
       mainWindow.show();
       mainWindow.focus();
       if (selectedText && selectedText.trim()) {
+        console.log("发送快速捕获事件，文本:", selectedText.trim());
         mainWindow.webContents.send("quick-capture", {
           text: selectedText.trim()
         });
       } else {
+        console.log("没有选中文本，发送空捕获事件");
         mainWindow.webContents.send("quick-capture-empty");
       }
     } catch (error) {
@@ -64,6 +68,11 @@ const registerGlobalShortcuts = () => {
       mainWindow.webContents.send("quick-capture-empty");
     }
   });
+  if (success) {
+    console.log("全局快捷键 Ctrl+Q 注册成功");
+  } else {
+    console.error("全局快捷键 Ctrl+Q 注册失败");
+  }
 };
 const setApplicationMenu = () => {
   const template = [

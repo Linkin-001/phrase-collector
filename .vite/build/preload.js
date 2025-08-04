@@ -20,6 +20,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   },
   // Event listeners
   onQuickCapture: (callback) => ipcRenderer.on("quick-capture", callback),
+  onQuickCaptureEmpty: (callback) => ipcRenderer.on("quick-capture-empty", callback),
   onNewPhrase: (callback) => ipcRenderer.on("new-phrase", callback),
   onExportData: (callback) => ipcRenderer.on("export-data", callback),
   onShowAbout: (callback) => ipcRenderer.on("show-about", callback),

@@ -205,6 +205,7 @@
     <PhraseModal
       v-if="showPhraseModal"
       :phrase="editingPhrase"
+      :captured-text="capturedText"
       @save="savePhrase"
       @close="closePhraseModal"
     />
@@ -283,6 +284,7 @@ export default {
     const showExportModal = ref(false)
     const showSettingsModal = ref(false)
     const editingPhrase = ref(null)
+    const capturedText = ref('')
     
     // Toast 通知
     const toast = reactive({
@@ -477,6 +479,7 @@ export default {
     const closePhraseModal = () => {
       showPhraseModal.value = false
       editingPhrase.value = null
+      capturedText.value = ''
     }
     
     const savePhrase = async (phraseData) => {
@@ -574,15 +577,17 @@ export default {
       loadPhrases()
       
       // IPC 事件监听
-      electronAPI.onQuickCapture((event, text) => {
+      electronAPI.onQuickCapture((event, data) => {
         editingPhrase.value = null
+        capturedText.value = data.text || ''
         showPhraseModal.value = true
-        nextTick(() => {
-          // 预填充捕获的文本
-          if (text) {
-            // 这里需要传递给 PhraseModal 组件
-          }
-        })
+      })
+      
+      electronAPI.onQuickCaptureEmpty(() => {
+        editingPhrase.value = null
+        capturedText.value = ''
+        showPhraseModal.value = true
+        showToast('未检测到选中的文本，请手动输入', 'warning')
       })
       
       electronAPI.onNewPhrase(() => {
@@ -612,6 +617,7 @@ export default {
       showExportModal,
       showSettingsModal,
       editingPhrase,
+      capturedText,
       toast,
       
       // 计算属性
