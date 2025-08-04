@@ -46,17 +46,6 @@ body {
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
-/* 短语卡片样式 */
-.phrase-card {
-    border-radius: 8px;
-    padding: 1rem;
-    margin-bottom: 1rem;
-    background: white;
-    transition: all 0.3s ease;
-    cursor: pointer;
-}
- 
-
 .phrase-card.unknown {
     border-left: 4px solid #ffc107;
     background: linear-gradient(90deg, #fff9e6 0%, white 10%);
@@ -97,7 +86,6 @@ body {
     margin: 0.5rem 0;
     border-left: 3px solid #dee2e6;
 }
-
 
 /* 标签样式 */
 .tag {

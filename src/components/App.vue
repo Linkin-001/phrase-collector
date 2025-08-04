@@ -129,7 +129,8 @@
                     :class="[
                       'badge', 
                       'cursor-pointer',
-                      selectedTags.includes(tag.name) ? 'bg-primary' : 'bg-secondary'
+                      'tag-badge',
+                      selectedTags.includes(tag.name) ? 'bg-danger' : ''
                     ]"
                   >
                     {{ tag.name }} ({{ tag.count }})
@@ -656,5 +657,13 @@ export default {
 <style scoped>
 .cursor-pointer {
   cursor: pointer;
+}
+
+.tag-badge {
+  background-image: radial-gradient(circle at 13% 13%,
+      rgba(255, 221, 235, 0.8) 0%,
+      transparent 83%),
+    radial-gradient(circle at 89% 89%, rgba(187, 225, 250, 0.7) 0%, transparent 99%);
+  color: black;
 }
 </style>

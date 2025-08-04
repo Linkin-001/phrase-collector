@@ -1,28 +1,34 @@
 <template>
   <div class="col-md-6 col-lg-6">
     <div class="card  phrase-card" :class="{ 'border-warning': phrase.isUnknown }">
-      <div class="card-body d-flex flex-column p-0">
+      <div class="card-body d-flex flex-column p-0 justify-content-between">
         <div class="d-flex justify-content-between align-items-start mb-0">
-          <div class="flex-grow-1">
+          <div class="flex-grow-1 w-100">
             <p class="card-text phrase-text" v-html="highlightedText"></p>
             <p v-if="phrase.translation" class="text-muted small mb-1">
-              <strong>翻译:</strong> {{ phrase.translation }}
+              <strong>翻译:</strong>
+              <span class="text-ellipsis">{{ phrase.translation }}</span>
             </p>
             <p v-if="phrase.notes" class="text-muted small mb-1">
-              <strong>备注:</strong> {{ phrase.notes }}
+              <strong>备注:</strong>
+              <span class="text-ellipsis">{{ phrase.notes }}</span>
             </p>
           </div>
         </div>
 
         <div class="">
-          <div v-if="phrase.tags && phrase.tags.length > 0" class="mb-2">
-            <span v-for="tag in phrase.tags" :key="tag" class="badge me-1 mb-1 tag-badge">
-              {{ tag }}
-            </span>
-          </div>
+
 
           <div class="d-flex justify-content-between align-items-center text-muted small phrase-action-container">
-            <span style="font-size: 12px;">{{ formatDate(phrase.timestamp) }}</span>
+            <div class="d-flex align-items-center">
+              <span style="font-size: 12px;">{{ formatDate(phrase.timestamp) }}</span>
+
+              <div v-if="phrase.tags && phrase.tags.length > 0" class="ms-3">
+                <span v-for="tag in phrase.tags" :key="tag" class="badge ms-1 tag-badge">
+                  {{ tag }}
+                </span>
+              </div>
+            </div>
 
             <div class="phrase-actions">
               <button @click="$emit('toggle-unknown', phrase)" :class="[
@@ -116,6 +122,12 @@ export default {
 </script>
 
 <style scoped>
+.text-ellipsis {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 .tag-badge {
   background-image: radial-gradient(circle at 13% 13%,
       rgba(255, 221, 235, 0.8) 0%,
@@ -131,8 +143,14 @@ export default {
       rgba(255, 221, 235, 0.8) 0%,
       transparent 24%),
     radial-gradient(circle at 90% 53%, rgba(187, 225, 250, 0.7) 0%, transparent 43%),
-    radial-gradient(circle at 48% 32%, rgba(255, 248, 225, 0.5) 0%, transparent 81%)
+    radial-gradient(circle at 48% 32%, rgba(255, 248, 225, 0.5) 0%, transparent 81%);
+    border-radius: 8px;
+    padding: 1rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    height: 100%;
 }
+ 
 
 .phrase-card:hover {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -140,7 +158,6 @@ export default {
 }
 
 .phrase-card:hover {
-
   background-image: radial-gradient(circle at 57% 22%,
       rgba(255, 221, 235, 0.8) 0%,
       transparent 64%),
