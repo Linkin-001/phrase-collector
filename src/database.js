@@ -101,13 +101,17 @@ class Database {
 
   // 添加短语
   async addPhrase(phraseData) {
-    const { text, isUnknown = false, tags = [], metadata = {} } = phraseData;
+    console.log('addPhrase 接收到的数据:', phraseData);
+    const { text, translation, notes, isUnknown = false, tags = [], metadata = {} } = phraseData;
     // 确保tags是数组
     const safeTags = Array.isArray(tags) ? tags : [];
+    console.log('处理后的标签:', safeTags);
     
     const phrase = {
       id: this.data.nextId++,
       text,
+      translation: translation || null,
+      notes: notes || null,
       isUnknown,
       tags: safeTags.map(tagName => ({ name: tagName, color: '#007bff' })),
       metadata,
@@ -116,6 +120,7 @@ class Database {
       updated_at: new Date().toISOString()
     };
 
+    console.log('即将保存的短语:', phrase);
     this.data.phrases.push(phrase);
     await this.saveData();
     return phrase.id;
@@ -123,22 +128,27 @@ class Database {
 
   // 更新短语
   async updatePhrase(id, phraseData) {
+    console.log('updatePhrase 接收到的数据:', { id, phraseData });
     const phraseIndex = this.data.phrases.findIndex(p => p.id === id);
     if (phraseIndex === -1) return false;
 
     const phrase = this.data.phrases[phraseIndex];
-    const { text, isUnknown, tags, metadata } = phraseData;
+    const { text, translation, notes, isUnknown, tags, metadata } = phraseData;
     
     if (text !== undefined) phrase.text = text;
+    if (translation !== undefined) phrase.translation = translation || null;
+    if (notes !== undefined) phrase.notes = notes || null;
     if (isUnknown !== undefined) phrase.isUnknown = isUnknown;
     if (metadata !== undefined) phrase.metadata = metadata;
     if (tags !== undefined) {
       // 确保tags是数组
       const safeTags = Array.isArray(tags) ? tags : [];
+      console.log('更新标签:', safeTags);
       phrase.tags = safeTags.map(tagName => ({ name: tagName, color: '#007bff' }));
     }
     phrase.updated_at = new Date().toISOString();
 
+    console.log('更新后的短语:', phrase);
     await this.saveData();
     return true;
   }

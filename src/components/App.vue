@@ -501,8 +501,8 @@ export default {
     
     const toggleUnknown = async (phrase) => {
       try {
+        // 只更新isUnknown字段，避免tags格式问题
         await electronAPI.updatePhrase(phrase.id, {
-          ...phrase,
           isUnknown: !phrase.isUnknown
         })
         await loadPhrases()

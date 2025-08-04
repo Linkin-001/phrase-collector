@@ -116,7 +116,7 @@
 </template>
 
 <script>
-import { ref, reactive, watch, nextTick, onMounted } from 'vue'
+import { nextTick, onMounted, reactive, ref, watch } from 'vue'
 
 export default {
   name: 'PhraseModal',
