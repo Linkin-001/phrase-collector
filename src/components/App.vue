@@ -54,6 +54,13 @@
           >
             <i class="bi bi-gear"></i>
           </button>
+          <button 
+            class="btn btn-outline-light" 
+            @click="openExitConfirmModal" 
+            title="关闭程序"
+          >
+            <i class="bi bi-x-circle"></i>
+          </button>
         </div>
       </div>
     </nav>

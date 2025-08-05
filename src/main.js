@@ -30,6 +30,8 @@ const createWindow = () => {
     height: 1000,
     minWidth: 800,
     minHeight: 600,
+    // frame: false,
+    // autoHideMenuBar: true,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -264,7 +266,7 @@ app.whenReady().then(async () => {
   createWindow();
   createTray();
   registerGlobalShortcuts();
-  setApplicationMenu();
+  // setApplicationMenu(); // 移除应用菜单栏
 
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {
