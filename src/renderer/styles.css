@@ -478,6 +478,7 @@ body {
 .modern-btn-cancel:hover {
     background: rgba(108, 117, 125, 0.15);
     border-color: rgba(108, 117, 125, 0.5);
+    color: #6c757d;
 }
 
 .modern-btn-action {

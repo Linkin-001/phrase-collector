@@ -22,7 +22,7 @@
               placeholder="搜索短语..."
             >
             <button 
-              class="btn btn-outline-light" 
+              class="btn text-secondary bg-white btn-outline-light" 
               type="button" 
               @click="clearSearch"
             >
@@ -227,6 +227,12 @@
       @choice="handleExitChoice"
       @close="closeExitConfirmModal"
     />
+    
+    <DeleteConfirmModal
+      v-if="showDeleteConfirmModal"
+      @choice="handleDeleteChoice"
+      @close="closeDeleteConfirmModal"
+    />
 
     <!-- Toast 通知 -->
     <Toast
@@ -239,12 +245,13 @@
 </template>
 
 <script>
-import { ref, reactive, computed, onMounted, nextTick } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
+import DeleteConfirmModal from './DeleteConfirmModal.vue'
+import ExitConfirmModal from './ExitConfirmModal.vue'
+import ExportModal from './ExportModal.vue'
 import PhraseCard from './PhraseCard.vue'
 import PhraseModal from './PhraseModal.vue'
-import ExportModal from './ExportModal.vue'
 import SettingsModal from './SettingsModal.vue'
-import ExitConfirmModal from './ExitConfirmModal.vue'
 import Toast from './Toast.vue'
 
 const electronAPI = window.electronAPI || {
@@ -265,6 +272,7 @@ export default {
     ExportModal,
     SettingsModal,
     ExitConfirmModal,
+    DeleteConfirmModal,
     Toast
   },
   setup() {
@@ -293,8 +301,10 @@ export default {
     const showExportModal = ref(false)
     const showSettingsModal = ref(false)
     const showExitConfirmModal = ref(false)
+    const showDeleteConfirmModal = ref(false)
     const editingPhrase = ref(null)
     const capturedText = ref('')
+    const deletingPhrase = ref(null)
     
     // Toast 通知
     const toast = reactive({
@@ -532,10 +542,25 @@ export default {
       }
     }
     
-    const deletePhrase = async (phrase) => {
-      if (confirm('确定要删除这个短语吗？')) {
+    const deletePhrase = (phrase) => {
+      deletingPhrase.value = phrase
+      showDeleteConfirmModal.value = true
+    }
+    
+    const openDeleteConfirmModal = (phrase) => {
+      deletingPhrase.value = phrase
+      showDeleteConfirmModal.value = true
+    }
+    
+    const closeDeleteConfirmModal = () => {
+      showDeleteConfirmModal.value = false
+      deletingPhrase.value = null
+    }
+    
+    const handleDeleteChoice = async (choice) => {
+      if (choice === 'confirm' && deletingPhrase.value) {
         try {
-          await electronAPI.deletePhrase(phrase.id)
+          await electronAPI.deletePhrase(deletingPhrase.value.id)
           await loadPhrases()
           showToast('短语已删除', 'success')
         } catch (error) {
@@ -543,6 +568,7 @@ export default {
           showToast('删除失败', 'error')
         }
       }
+      closeDeleteConfirmModal()
     }
     
     const openExportModal = () => {
@@ -644,8 +670,10 @@ export default {
       showExportModal,
       showSettingsModal,
       showExitConfirmModal,
+      showDeleteConfirmModal,
       editingPhrase,
       capturedText,
+      deletingPhrase,
       toast,
       
       // 计算属性
@@ -677,6 +705,9 @@ export default {
       openExitConfirmModal,
       closeExitConfirmModal,
       handleExitChoice,
+      openDeleteConfirmModal,
+      closeDeleteConfirmModal,
+      handleDeleteChoice,
       showToast,
       hideToast
     }

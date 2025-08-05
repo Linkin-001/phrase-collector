@@ -1,5 +1,5 @@
 <template>
-  <div class="modal fade show d-block exit-confirm-modal" tabindex="-1" style="background-color: rgba(0,0,0,0.6); backdrop-filter: blur(8px);">
+  <div class="modal fade show d-block delete-confirm-modal" tabindex="-1" style="background-color: rgba(0,0,0,0.6); backdrop-filter: blur(8px);">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <!-- 圆形装饰背景 -->
@@ -12,43 +12,29 @@
         <div class="modal-header border-0 pb-2">
           <div class="d-flex align-items-center">
             <div class="icon-wrapper me-3">
-              <i class="bi bi-question-circle-fill text-warning"></i>
+              <i class="bi bi-exclamation-triangle-fill text-danger"></i>
             </div>
             <div>
-              <h5 class="modal-title mb-0">退出确认</h5>
-              <p class="text-muted small mb-0">请选择您希望的操作</p>
+              <h5 class="modal-title mb-0">删除确认</h5>
+              <p class="text-muted small mb-0">此操作无法撤销</p>
             </div>
           </div>
         </div>
         
         <div class="modal-body pt-2">
-          <p class="text-muted mb-4">您希望如何处理当前应用？</p>
+          <p class="text-muted mb-4">确定要删除这个短语吗？删除后将无法恢复。</p>
           
-          <div class="exit-options">
+          <div class="delete-options">
             <button 
               type="button" 
               class="btn btn-option btn-outline-danger w-100 mb-3"
-              @click="handleChoice('quit')"
+              @click="handleChoice('confirm')"
             >
               <div class="d-flex align-items-center">
-                <i class="bi bi-power me-3"></i>
+                <i class="bi bi-trash3 me-3"></i>
                 <div class="text-start">
-                  <div class="fw-semibold">退出软件</div>
-                  <small class="">完全关闭应用程序</small>
-                </div>
-              </div>
-            </button>
-            
-            <button 
-              type="button" 
-              class="btn btn-option btn-outline-primary w-100 mb-3"
-              @click="handleChoice('minimize')"
-            >
-              <div class="d-flex align-items-center">
-                <i class="bi bi-arrow-down-circle me-3"></i>
-                <div class="text-start">
-                  <div class="fw-semibold">最小化到托盘</div>
-                  <small class="">隐藏窗口到系统托盘</small>
+                  <div class="fw-semibold">确认删除</div>
+                  <small class="">永久删除此短语</small>
                 </div>
               </div>
             </button>
@@ -62,7 +48,7 @@
                 <i class="bi bi-x-circle me-3"></i>
                 <div class="text-start">
                   <div class="fw-semibold">取消</div>
-                  <small class="">继续使用应用</small>
+                  <small class="">保留此短语</small>
                 </div>
               </div>
             </button>
@@ -75,7 +61,7 @@
 
 <script>
 export default {
-  name: 'ExitConfirmModal',
+  name: 'DeleteConfirmModal',
   emits: ['choice'],
   setup(props, { emit }) {
     const handleChoice = (choice) => {
@@ -90,7 +76,7 @@ export default {
 </script>
 
 <style scoped>
-.exit-confirm-modal {
+.delete-confirm-modal {
   animation: fadeIn 0.2s ease-out;
 }
 
@@ -147,7 +133,7 @@ export default {
 .circle-1 {
   width: 120px;
   height: 120px;
-  background: linear-gradient(135deg, #007bff, #0056b3);
+  background: linear-gradient(135deg, #dc3545, #c82333);
   top: -60px;
   right: -60px;
 }
@@ -155,7 +141,7 @@ export default {
 .circle-2 {
   width: 80px;
   height: 80px;
-  background: linear-gradient(135deg, #28a745, #1e7e34);
+  background: linear-gradient(135deg, #6c757d, #545b62);
   bottom: -40px;
   left: -40px;
 }
@@ -179,11 +165,11 @@ export default {
   width: 48px;
   height: 48px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+  background: linear-gradient(135deg, #f8d7da, #f5c6cb);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
 }
 
 .icon-wrapper i {
@@ -225,12 +211,6 @@ export default {
   color: white;
 }
 
-.btn-outline-primary:hover {
-  background: linear-gradient(135deg, #007bff, #0056b3);
-  border-color: #007bff;
-  color: white;
-}
-
 .btn-outline-secondary:hover {
   background: linear-gradient(135deg, #6c757d, #545b62);
   border-color: #6c757d;
@@ -241,7 +221,7 @@ export default {
   font-size: 20px;
 }
 
-.exit-options {
+.delete-options {
   animation: slideUp 0.3s ease-out 0.1s both;
 }
 

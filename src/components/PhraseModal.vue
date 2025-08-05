@@ -8,7 +8,7 @@
           </h5>
           <button 
             type="button" 
-            class="btn-close" 
+            class="bi bi-x-lg btn-close" 
             @click="$emit('close')"
           ></button>
         </div>
@@ -22,7 +22,7 @@
                 id="phraseText"
                 v-model="formData.text"
                 class="form-control modern-textarea" 
-                rows="8" 
+                rows="5" 
                 required
                 placeholder="请输入短语内容..."
               ></textarea>
