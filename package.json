@@ -2,12 +2,10 @@
   "name": "phrase-collector",
   "version": "1.0.0",
   "description": "一款基于 Electron 的短语应用，旨在帮助用户在阅读文档时高效收集、管理和复习重要短语",
-  "main": "main.js",
+  "main": ".vite/build/main.js",
   "license": "MIT",
   "scripts": {
     "start": "electron-forge start",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "rebuild": "electron-rebuild -f -w robotjs",
     "package": "electron-forge package",
     "make": "electron-forge make",
     "make:win": "electron-forge make --platform=win32",
@@ -38,11 +36,8 @@
   "dependencies": {
     "@xitanggg/node-selection": "^1.3.0",
     "electron-reload": "^2.0.0-alpha.1",
-    "electron-selected-text": "^1.1.2",
     "electron-squirrel-startup": "^1.0.1",
-    "knex": "^3.1.0",
-    "robotjs": "^0.6.0",
-    "sqlite3": "^5.1.6"
+    "vue": "^3.5.18"
   },
   "build": {
     "appId": "com.drawspace.phrase.collector",
@@ -59,13 +54,25 @@
     "win": {
       "target": [
         {
-          "target": "nsis",
-          "arch": [
-            "x64",
-            "ia32"
+          "name": "@electron-forge/maker-squirrel",
+          "config": {
+            "name": "phrase_collector"
+          }
+        },
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": [
+            "darwin"
           ]
         },
-        "portable"
+        {
+          "name": "@electron-forge/maker-deb",
+          "config": {}
+        },
+        {
+          "name": "@electron-forge/maker-rpm",
+          "config": {}
+        }
       ],
       "icon": "build/icon.ico"
     },

@@ -13,7 +13,10 @@ module.exports = {
       ProductName: 'Phrase Collector'
     }
   },
-  rebuildConfig: {},
+  rebuildConfig: {
+    force: false,
+    onlyModules: []
+  },
   makers: [
     {
       name: '@electron-forge/maker-squirrel',
