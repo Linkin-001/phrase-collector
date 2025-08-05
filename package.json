@@ -28,6 +28,7 @@
     "@electron-forge/plugin-fuses": "^7.8.2",
     "@electron-forge/plugin-vite": "^7.8.2",
     "@electron/fuses": "^2.0.0",
+    "@vitejs/plugin-vue": "^5.2.4",
     "electron": "^37.2.5",
     "electron-builder": "^26.0.12",
     "electron-rebuild": "^3.2.9",
@@ -46,32 +47,19 @@
       "output": "dist"
     },
     "files": [
-      "main.js",
-      "src/**/*",
+      ".vite/build/**/*",
+      "dist/renderer/**/*",
+      "src/database.js",
       "node_modules/**/*",
       "package.json"
     ],
     "win": {
       "target": [
         {
-          "name": "@electron-forge/maker-squirrel",
-          "config": {
-            "name": "phrase_collector"
-          }
-        },
-        {
-          "name": "@electron-forge/maker-zip",
-          "platforms": [
-            "darwin"
+          "target": "nsis",
+          "arch": [
+            "x64"
           ]
-        },
-        {
-          "name": "@electron-forge/maker-deb",
-          "config": {}
-        },
-        {
-          "name": "@electron-forge/maker-rpm",
-          "config": {}
         }
       ],
       "icon": "build/icon.ico"
