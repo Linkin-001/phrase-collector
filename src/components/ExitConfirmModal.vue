@@ -1,5 +1,9 @@
 <template>
-  <div class="modal fade show d-block exit-confirm-modal" tabindex="-1" style="background-color: rgba(0,0,0,0.6); backdrop-filter: blur(8px);">
+  <div
+    class="modal fade show d-block exit-confirm-modal"
+    tabindex="-1"
+    style="background-color: rgba(0,0,0,0.6); backdrop-filter: blur(8px);"
+  >
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <!-- 圆形装饰背景 -->
@@ -8,7 +12,7 @@
           <div class="decoration-circle circle-2"></div>
           <div class="decoration-circle circle-3"></div>
         </div>
-        
+
         <div class="modal-header border-0 pb-2">
           <div class="d-flex align-items-center">
             <div class="icon-wrapper me-3">
@@ -19,28 +23,34 @@
               <p class="text-muted small mb-0">请选择您希望的操作</p>
             </div>
           </div>
+          <button 
+            type="button" 
+            class="btn-close" 
+            @click="handleChoice('cancel')"
+            aria-label="关闭"
+          ></button>
         </div>
-        
+
         <div class="modal-body pt-2">
           <p class="text-muted mb-4">您希望如何处理当前应用？</p>
-          
+
           <div class="exit-options">
-            <button 
-              type="button" 
+            <button
+              type="button"
               class="btn btn-option btn-outline-danger w-100 mb-3"
               @click="handleChoice('quit')"
             >
               <div class="d-flex align-items-center">
                 <i class="bi bi-power me-3"></i>
                 <div class="text-start">
-                  <div class="fw-semibold">退出软件</div>
-                  <small class="">完全关闭应用程序</small>
+                  <div class="fw-semibold">直接退出软件</div>
+                  <small class>完全关闭应用程序</small>
                 </div>
               </div>
             </button>
-            
-            <button 
-              type="button" 
+
+            <button
+              type="button"
               class="btn btn-option btn-outline-primary w-100 mb-3"
               @click="handleChoice('minimize')"
             >
@@ -48,24 +58,25 @@
                 <i class="bi bi-arrow-down-circle me-3"></i>
                 <div class="text-start">
                   <div class="fw-semibold">最小化到托盘</div>
-                  <small class="">隐藏窗口到系统托盘</small>
+                  <small class>隐藏窗口到系统托盘</small>
                 </div>
               </div>
             </button>
-            
-            <button 
-              type="button" 
-              class="btn btn-option btn-outline-secondary w-100"
-              @click="handleChoice('cancel')"
-            >
-              <div class="d-flex align-items-center">
-                <i class="bi bi-x-circle me-3"></i>
-                <div class="text-start">
-                  <div class="fw-semibold">取消</div>
-                  <small class="">继续使用应用</small>
-                </div>
-              </div>
-            </button>
+
+
+
+            <!-- 不再提示选项 -->
+            <div class="form-check mt-3 pt-3 border-top">
+              <input 
+                class="form-check-input" 
+                type="checkbox" 
+                id="dontShowAgain" 
+                v-model="dontShowAgain"
+              >
+              <label class="form-check-label text-muted" for="dontShowAgain">
+                不再提示，下次直接执行此操作
+              </label>
+            </div>
           </div>
         </div>
       </div>
@@ -74,20 +85,27 @@
 </template>
 
 <script>
+import { ref } from 'vue'
+
 export default {
   name: 'ExitConfirmModal',
   emits: ['choice'],
   setup(props, { emit }) {
+    const dontShowAgain = ref(false)
+
     const handleChoice = (choice) => {
-      emit('choice', choice)
+      emit('choice', {
+        action: choice,
+        dontShowAgain: dontShowAgain.value
+      })
     }
-    
+
     return {
+      dontShowAgain,
       handleChoice
     }
   }
-}
-</script>
+}</script>
 
 <style scoped>
 .exit-confirm-modal {
@@ -200,13 +218,18 @@ export default {
 }
 
 .btn-option::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
   transition: left 0.5s ease;
 }
 
@@ -241,6 +264,33 @@ export default {
   font-size: 20px;
 }
 
+.btn-close {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  opacity: 0.6;
+  transition: all 0.2s ease;
+  padding: 0.5rem;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-close:hover {
+  opacity: 1;
+  background-color: rgba(0, 0, 0, 0.1);
+  transform: scale(1.1);
+}
+
+.btn-close::before {
+  content: "\00d7";
+  font-weight: bold;
+  color: #6c757d;
+}
+
 .exit-options {
   animation: slideUp 0.3s ease-out 0.1s both;
 }
@@ -254,5 +304,36 @@ export default {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.form-check {
+  animation: slideUp 0.3s ease-out 0.2s both;
+}
+
+.form-check-input {
+  border-radius: 4px;
+  border: 2px solid #dee2e6;
+  transition: all 0.2s ease;
+}
+
+.form-check-input:checked {
+  background-color: #007bff;
+  border-color: #007bff;
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+}
+
+.form-check-input:focus {
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.form-check-label {
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.form-check-label:hover {
+  color: #495057 !important;
 }
 </style>

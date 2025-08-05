@@ -59,12 +59,26 @@ const createWindow = () => {
   }
 
   // 窗口关闭事件处理
-  mainWindow.on('close', (event) => {
+  mainWindow.on('close', async (event) => {
     if (!isQuitting) {
       event.preventDefault();
       
-      // 发送显示退出确认弹窗的事件到渲染进程
-      mainWindow.webContents.send('show-exit-confirm');
+      // 检查用户是否设置了"不再提示"
+      const dontShowExitConfirm = await database.getSetting('dontShowExitConfirm', false);
+      const exitBehavior = await database.getSetting('exitBehavior', null);
+      
+      if (dontShowExitConfirm && exitBehavior) {
+        // 直接执行用户之前选择的操作
+        if (exitBehavior === 'quit') {
+          isQuitting = true;
+          app.quit();
+        } else if (exitBehavior === 'minimize') {
+          mainWindow.hide();
+        }
+      } else {
+        // 发送显示退出确认弹窗的事件到渲染进程
+        mainWindow.webContents.send('show-exit-confirm');
+      }
     }
   });
   
@@ -136,9 +150,24 @@ const createTray = () => {
       },
       {
         label: '退出',
-        click: () => {
-          isQuitting = true;
-          app.quit();
+        click: async () => {
+          // 检查用户是否设置了"不再提示"
+          const dontShowExitConfirm = await database.getSetting('dontShowExitConfirm', false);
+          const exitBehavior = await database.getSetting('exitBehavior', null);
+          
+          if (dontShowExitConfirm && exitBehavior) {
+            // 直接执行用户之前选择的操作
+            if (exitBehavior === 'quit') {
+              isQuitting = true;
+              app.quit();
+            } else if (exitBehavior === 'minimize') {
+              mainWindow.hide();
+            }
+          } else {
+            // 显示退出确认对话框
+            showMainWindow();
+            mainWindow.webContents.send('show-exit-confirm');
+          }
         }
       }
     ]);
@@ -324,14 +353,36 @@ ipcMain.handle("export-phrases", async (event, format) => {
 });
 
 // 处理退出确认选择
-ipcMain.on('exit-choice', (event, choice) => {
-  if (choice === 'quit') {
+ipcMain.on('exit-choice', async (event, choiceData) => {
+  const { action, dontShowAgain } = choiceData;
+  
+  // 如果用户选择了"不再提示"，保存设置
+  if (dontShowAgain && action !== 'cancel') {
+    await database.setSetting('exitBehavior', action);
+    await database.setSetting('dontShowExitConfirm', true);
+  }
+  
+  if (action === 'quit') {
     // 退出软件
     isQuitting = true;
     app.quit();
-  } else if (choice === 'minimize') {
+  } else if (action === 'minimize') {
     // 最小化到托盘
     mainWindow.hide();
   }
-  // choice === 'cancel' 时不做任何操作
+  // action === 'cancel' 时不做任何操作
+});
+
+// 重置退出确认设置
+ipcMain.handle('reset-exit-confirm', async () => {
+  await database.setSetting('dontShowExitConfirm', false);
+  await database.setSetting('exitBehavior', null);
+  return true;
+});
+
+// 获取退出确认设置
+ipcMain.handle('get-exit-confirm-settings', async () => {
+  const dontShowExitConfirm = await database.getSetting('dontShowExitConfirm', false);
+  const exitBehavior = await database.getSetting('exitBehavior', null);
+  return { dontShowExitConfirm, exitBehavior };
 });

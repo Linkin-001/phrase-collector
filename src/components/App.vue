@@ -613,8 +613,9 @@ export default {
       showExitConfirmModal.value = false
     }
     
-    const handleExitChoice = (choice) => {
-      electronAPI.sendExitChoice(choice)
+    const handleExitChoice = (choiceData) => {
+      // choiceData 现在包含 { action, dontShowAgain }
+      electronAPI.sendExitChoice(choiceData)
       closeExitConfirmModal()
     }
     
