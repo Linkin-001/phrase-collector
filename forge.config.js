@@ -1,27 +1,60 @@
-const { FusesPlugin } = require('@electron-forge/plugin-fuses');
-const { FuseV1Options, FuseVersion } = require('@electron/fuses');
+// Removed FusesPlugin due to ES Module compatibility issues
 
 module.exports = {
   packagerConfig: {
     asar: true,
+    icon: './build/icon', // 图标路径（不需要扩展名）
+    name: 'Phrase Collector',
+    executableName: 'phrase-collector',
+    appBundleId: 'com.drawspace.phrase.collector',
+    appCategoryType: 'public.app-category.productivity',
+    win32metadata: {
+      CompanyName: 'DrawSpace',
+      ProductName: 'Phrase Collector'
+    }
   },
   rebuildConfig: {},
   makers: [
     {
       name: '@electron-forge/maker-squirrel',
-      config: {},
+      config: {
+        name: 'phrase-collector',
+        setupIcon: './build/icon.ico',
+        iconUrl: './build/icon.ico'
+      },
+      platforms: ['win32']
     },
     {
       name: '@electron-forge/maker-zip',
       platforms: ['darwin'],
     },
     {
+      name: '@electron-forge/maker-dmg',
+      config: {
+        name: 'Phrase Collector',
+        icon: './build/icon.icns'
+      },
+      platforms: ['darwin']
+    },
+    {
       name: '@electron-forge/maker-deb',
-      config: {},
+      config: {
+        options: {
+          maintainer: 'DrawSpace',
+          homepage: 'https://github.com/drawspace/phrase-collector'
+        }
+      },
+      platforms: ['linux']
     },
     {
       name: '@electron-forge/maker-rpm',
-      config: {},
+      config: {
+        options: {
+          maintainer: 'DrawSpace',
+          homepage: 'https://github.com/drawspace/phrase-collector'
+        }
+      },
+      platforms: ['linux']
     },
   ],
   plugins: [
@@ -29,16 +62,6 @@ module.exports = {
       name: '@electron-forge/plugin-auto-unpack-natives',
       config: {},
     },
-    // Fuses are used to enable/disable various Electron functionality
-    // at package time, before code signing the application
-    new FusesPlugin({
-      version: FuseVersion.V1,
-      [FuseV1Options.RunAsNode]: false,
-      [FuseV1Options.EnableCookieEncryption]: true,
-      [FuseV1Options.EnableNodeOptionsEnvironmentVariable]: false,
-      [FuseV1Options.EnableNodeCliInspectArguments]: false,
-      [FuseV1Options.EnableEmbeddedAsarIntegrityValidation]: true,
-      [FuseV1Options.OnlyLoadAppFromAsar]: true,
-    }),
+    // FusesPlugin and Vite plugin removed due to compatibility issues
   ],
 };
