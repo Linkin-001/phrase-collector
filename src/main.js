@@ -7,6 +7,7 @@ const {
   Menu,
   dialog,
   shell,
+  Tray,
 } = require("electron");
 const path = require("path");
 const Database = require(path.join(__dirname, 'database'));
@@ -19,6 +20,8 @@ if (require('electron-squirrel-startup')) {
 
 let mainWindow;
 let database;
+let tray = null;
+let isQuitting = false;
 
 // 创建主窗口
 const createWindow = () => {
@@ -53,9 +56,21 @@ const createWindow = () => {
     mainWindow.webContents.openDevTools();
   }
 
-  // 窗口关闭时直接退出应用
+  // 窗口关闭事件处理
+  mainWindow.on('close', (event) => {
+    if (!isQuitting) {
+      event.preventDefault();
+      
+      // 发送显示退出确认弹窗的事件到渲染进程
+      mainWindow.webContents.send('show-exit-confirm');
+    }
+  });
+  
+  // 窗口关闭时的处理
   mainWindow.on('closed', () => {
-    app.quit();
+    if (isQuitting) {
+      app.quit();
+    }
   });
 };
 
@@ -72,8 +87,7 @@ const registerGlobalShortcuts = () => {
       // 窗口信息功能已移除
 
       // 显示窗口
-      mainWindow.show();
-      mainWindow.focus();
+      showMainWindow();
 
       if (selectedText && selectedText.trim()) {
         console.log("发送快速捕获事件，文本:", selectedText.trim());
@@ -88,8 +102,7 @@ const registerGlobalShortcuts = () => {
       }
     } catch (error) {
       console.error("快速捕获失败:", error);
-      mainWindow.show();
-      mainWindow.focus();
+      showMainWindow();
       mainWindow.webContents.send("quick-capture-empty");
     }
   });
@@ -98,6 +111,65 @@ const registerGlobalShortcuts = () => {
     console.log("全局快捷键 Ctrl+Q 注册成功");
   } else {
     console.error("全局快捷键 Ctrl+Q 注册失败");
+  }
+};
+
+// 创建系统托盘
+const createTray = () => {
+  try {
+    // 使用ICO格式图标，Windows系统兼容性更好
+    const iconPath = path.join(__dirname, "../build/icon.ico");
+    tray = new Tray(iconPath);
+    
+    // 设置托盘提示文本
+    tray.setToolTip('Phrase Collector');
+    
+    // 创建托盘右键菜单
+    const contextMenu = Menu.buildFromTemplate([
+      {
+        label: '显示窗口',
+        click: () => {
+          showMainWindow();
+        }
+      },
+      {
+        label: '退出',
+        click: () => {
+          isQuitting = true;
+          app.quit();
+        }
+      }
+    ]);
+    
+    // 设置托盘右键菜单
+    tray.setContextMenu(contextMenu);
+    
+    // 双击托盘图标显示窗口
+    tray.on('double-click', () => {
+      showMainWindow();
+    });
+    
+    console.log('系统托盘创建成功');
+  } catch (error) {
+    console.error('创建系统托盘失败:', error);
+    tray = null;
+  }
+};
+
+// 显示主窗口的统一方法
+const showMainWindow = () => {
+  if (mainWindow) {
+    if (mainWindow.isMinimized()) {
+      mainWindow.restore();
+    }
+    mainWindow.show();
+    mainWindow.focus();
+    
+    // 在Windows上确保窗口置顶
+    if (process.platform === 'win32') {
+      mainWindow.setAlwaysOnTop(true);
+      mainWindow.setAlwaysOnTop(false);
+    }
   }
 };
 
@@ -190,6 +262,7 @@ app.whenReady().then(async () => {
 
 
   createWindow();
+  createTray();
   registerGlobalShortcuts();
   setApplicationMenu();
 
@@ -202,13 +275,21 @@ app.whenReady().then(async () => {
 
 // 所有窗口关闭时
 app.on("window-all-closed", () => {
-  app.quit();
+  // 如果有托盘图标，不退出应用，让应用在后台运行
+  if (!tray) {
+    app.quit();
+  }
 });
 
 // 应用退出前
 app.on("will-quit", () => {
   // 注销所有快捷键
   globalShortcut.unregisterAll();
+  
+  // 销毁托盘图标
+  if (tray) {
+    tray.destroy();
+  }
 });
 
 // IPC 通信处理
@@ -238,4 +319,17 @@ ipcMain.handle("get-phrase-stats", async () => {
 
 ipcMain.handle("export-phrases", async (event, format) => {
   return await database.exportPhrases(format);
+});
+
+// 处理退出确认选择
+ipcMain.on('exit-choice', (event, choice) => {
+  if (choice === 'quit') {
+    // 退出软件
+    isQuitting = true;
+    app.quit();
+  } else if (choice === 'minimize') {
+    // 最小化到托盘
+    mainWindow.hide();
+  }
+  // choice === 'cancel' 时不做任何操作
 });

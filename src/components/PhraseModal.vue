@@ -1,7 +1,7 @@
 <template>
-  <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+  <div class="modal fade show d-block modern-modal" tabindex="-1">
     <div class="modal-dialog modal-lg">
-      <div class="modal-content">
+      <div class="modal-content modern-modal-content">
         <div class="modal-header">
           <h5 class="modal-title">
             {{ phrase ? '编辑短语' : '添加短语' }}
@@ -14,100 +14,113 @@
         </div>
         <div class="modal-body">
           <form @submit.prevent="handleSubmit">
-            <div class="mb-3">
-              <label for="phraseText" class="form-label">短语内容 *</label>
+            <div class="mb-4">
+              <label for="phraseText" class="form-label modern-label">
+                <i class="bi bi-chat-text me-2"></i>短语内容 *
+              </label>
               <textarea 
                 id="phraseText"
                 v-model="formData.text"
-                class="form-control" 
+                class="form-control modern-textarea" 
                 rows="8" 
                 required
                 placeholder="请输入短语内容..."
               ></textarea>
             </div>
             
-            <div class="mb-3">
-              <label for="phraseTranslation" class="form-label">翻译</label>
+            <div class="mb-4">
+              <label for="phraseTranslation" class="form-label modern-label">
+                <i class="bi bi-translate me-2"></i>翻译
+              </label>
               <input 
                 id="phraseTranslation"
                 v-model="formData.translation"
                 type="text" 
-                class="form-control" 
+                class="form-control modern-input" 
                 placeholder="请输入翻译..."
               >
             </div>
             
-            <div class="mb-3">
-              <label for="phraseNotes" class="form-label">备注</label>
+            <div class="mb-4">
+              <label for="phraseNotes" class="form-label modern-label">
+                <i class="bi bi-journal-text me-2"></i>备注
+              </label>
               <textarea 
                 id="phraseNotes"
                 v-model="formData.notes"
-                class="form-control" 
+                class="form-control modern-textarea" 
                 rows="3" 
                 placeholder="请输入备注..."
               ></textarea>
             </div>
 
-            <div class="mb-3">
-              <label for="phraseTags" class="form-label">标签</label>
+            <div class="mb-4">
+              <label for="phraseTags" class="form-label modern-label">
+                <i class="bi bi-tags me-2"></i>标签
+              </label>
               <input 
                 id="phraseTags"
                 v-model="tagInput"
                 @keydown.enter.prevent="addTag"
                 @keydown="(e) => e.key === ',' && (e.preventDefault(), addTag())"
                 type="text" 
-                class="form-control" 
+                class="form-control modern-input" 
                 placeholder="输入标签后按回车或逗号添加"
               >
-              <div class="form-text">按回车键或逗号添加标签</div>
+              <div class="form-text modern-form-text">
+                <i class="bi bi-info-circle me-1"></i>按回车键或逗号添加标签
+              </div>
               
-              <div v-if="formData.tags.length > 0" class="mt-2">
-                <span 
-                  v-for="(tag, index) in formData.tags" 
-                  :key="index"
-                  class="badge bg-secondary me-1 mb-1 tag-item"
-                >
-                  {{ tag }}
-                  <button 
-                    type="button"
-                    @click="removeTag(index)"
-                    class="btn-close btn-close-white ms-1"
-                    style="font-size: 0.6em;"
-                  ></button>
-                </span>
+              <div v-if="formData.tags.length > 0" class="mt-3">
+                <div class="modern-tags-container">
+                  <span 
+                    v-for="(tag, index) in formData.tags" 
+                    :key="index"
+                    class="modern-tag"
+                  >
+                    <i class="bi bi-tag-fill me-1"></i>{{ tag }}
+                    <button 
+                      type="button"
+                      @click="removeTag(index)"
+                      class="modern-tag-remove"
+                    >
+                      <i class="bi bi-x"></i>
+                    </button>
+                  </span>
+                </div>
               </div>
             </div>
             
-            <div class="mb-3">
-              <div class="form-check">
+            <div class="mb-4">
+              <div class="form-check modern-checkbox">
                 <input 
                   id="phraseIsUnknown"
                   v-model="formData.isUnknown"
-                  class="form-check-input" 
+                  class="form-check-input modern-check-input" 
                   type="checkbox"
                 >
-                <label class="form-check-label" for="phraseIsUnknown">
-                  标记为"不认识"
+                <label class="form-check-label modern-check-label" for="phraseIsUnknown">
+                  <i class="bi bi-question-circle me-2"></i>标记为"不认识"
                 </label>
               </div>
             </div>
           </form>
         </div>
-        <div class="modal-footer">
+        <div class="modal-footer modern-modal-footer">
           <button 
             type="button" 
-            class="btn btn-secondary" 
+            class="btn btn-outline-secondary modern-btn-cancel" 
             @click="$emit('close')"
           >
-            取消
+            <i class="bi bi-x-circle me-2"></i>取消
           </button>
           <button 
             type="button" 
-            class="btn btn-primary" 
+            class="btn btn-primary modern-btn-save" 
             @click="handleSubmit"
             :disabled="!formData.text.trim()"
           >
-            保存
+            <i class="bi bi-check-circle me-2"></i>保存
           </button>
         </div>
       </div>

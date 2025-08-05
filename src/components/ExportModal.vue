@@ -1,7 +1,7 @@
 <template>
-  <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+  <div class="modal fade show d-block modern-modal" tabindex="-1">
     <div class="modal-dialog">
-      <div class="modal-content">
+      <div class="modal-content modern-modal-content">
         <div class="modal-header">
           <h5 class="modal-title">导出数据</h5>
           <button 
@@ -11,49 +11,53 @@
           ></button>
         </div>
         <div class="modal-body">
-          <div class="mb-3">
-            <label class="form-label">选择导出格式</label>
+          <div class="mb-4">
+            <label class="form-label modern-label">
+              <i class="bi bi-file-earmark-arrow-down me-2"></i>选择导出格式
+            </label>
             
-            <div class="form-check">
-              <input 
-                id="exportJson"
-                v-model="selectedFormat" 
-                class="form-check-input" 
-                type="radio" 
-                value="json"
-              >
-              <label class="form-check-label" for="exportJson">
-                <strong>JSON 格式</strong>
-                <div class="text-muted small">包含完整的数据结构，适合备份和迁移</div>
-              </label>
-            </div>
-            
-            <div class="form-check">
-              <input 
-                id="exportCsv"
-                v-model="selectedFormat" 
-                class="form-check-input" 
-                type="radio" 
-                value="csv"
-              >
-              <label class="form-check-label" for="exportCsv">
-                <strong>CSV 格式</strong>
-                <div class="text-muted small">表格格式，可用 Excel 等软件打开</div>
-              </label>
-            </div>
-            
-            <div class="form-check">
-              <input 
-                id="exportTxt"
-                v-model="selectedFormat" 
-                class="form-check-input" 
-                type="radio" 
-                value="txt"
-              >
-              <label class="form-check-label" for="exportTxt">
-                <strong>TXT 格式</strong>
-                <div class="text-muted small">纯文本格式，仅包含短语内容</div>
-              </label>
+            <div class="modern-options-container">
+              <div class="form-check modern-checkbox">
+                <input 
+                  id="exportJson"
+                  v-model="selectedFormat" 
+                  class="form-check-input modern-check-input" 
+                  type="radio" 
+                  value="json"
+                >
+                <label class="form-check-label modern-check-label" for="exportJson">
+                  <strong>JSON 格式</strong>
+                  <div class="text-muted small">包含完整的数据结构，适合备份和迁移</div>
+                </label>
+              </div>
+              
+              <div class="form-check modern-checkbox">
+                <input 
+                  id="exportCsv"
+                  v-model="selectedFormat" 
+                  class="form-check-input modern-check-input" 
+                  type="radio" 
+                  value="csv"
+                >
+                <label class="form-check-label modern-check-label" for="exportCsv">
+                  <strong>CSV 格式</strong>
+                  <div class="text-muted small">表格格式，可用 Excel 等软件打开</div>
+                </label>
+              </div>
+              
+              <div class="form-check modern-checkbox">
+                <input 
+                  id="exportTxt"
+                  v-model="selectedFormat" 
+                  class="form-check-input modern-check-input" 
+                  type="radio" 
+                  value="txt"
+                >
+                <label class="form-check-label modern-check-label" for="exportTxt">
+                  <strong>TXT 格式</strong>
+                  <div class="text-muted small">纯文本格式，仅包含短语内容</div>
+                </label>
+              </div>
             </div>
           </div>
           
@@ -62,22 +66,21 @@
             导出的文件将保存到您的下载文件夹中
           </div>
         </div>
-        <div class="modal-footer">
+        <div class="modal-footer modern-modal-footer">
           <button 
             type="button" 
-            class="btn btn-secondary" 
+            class="btn btn-outline-secondary modern-btn-cancel" 
             @click="$emit('close')"
           >
-            取消
+            <i class="bi bi-x-circle me-2"></i>取消
           </button>
           <button 
             type="button" 
-            class="btn btn-primary" 
+            class="btn btn-primary modern-btn-save" 
             @click="handleExport"
             :disabled="!selectedFormat"
           >
-            <i class="bi bi-download me-1"></i>
-            导出
+            <i class="bi bi-download me-2"></i>导出
           </button>
         </div>
       </div>

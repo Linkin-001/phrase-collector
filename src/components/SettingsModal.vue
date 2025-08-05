@@ -1,7 +1,7 @@
 <template>
-  <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+  <div class="modal fade show d-block modern-modal" tabindex="-1">
     <div class="modal-dialog modal-lg">
-      <div class="modal-content">
+      <div class="modal-content modern-modal-content">
 
         <div class="modal-body">
           <!-- 标签页导航 -->
@@ -184,9 +184,9 @@
             </div>
           </div>
         </div>
-        <div class="modal-footer justify-content-center">
-          <button type="button" class="btn btn-outline-secondary" @click="$emit('close')">
-            关闭
+        <div class="modal-footer modern-modal-footer justify-content-center">
+          <button type="button" class="btn btn-outline-secondary modern-btn-cancel" @click="$emit('close')">
+            <i class="bi bi-x-circle me-2"></i>关闭
           </button>
         </div>
       </div>

@@ -221,6 +221,12 @@
       v-if="showSettingsModal"
       @close="closeSettingsModal"
     />
+    
+    <ExitConfirmModal
+      v-if="showExitConfirmModal"
+      @choice="handleExitChoice"
+      @close="closeExitConfirmModal"
+    />
 
     <!-- Toast 通知 -->
     <Toast
@@ -238,6 +244,7 @@ import PhraseCard from './PhraseCard.vue'
 import PhraseModal from './PhraseModal.vue'
 import ExportModal from './ExportModal.vue'
 import SettingsModal from './SettingsModal.vue'
+import ExitConfirmModal from './ExitConfirmModal.vue'
 import Toast from './Toast.vue'
 
 const electronAPI = window.electronAPI || {
@@ -257,6 +264,7 @@ export default {
     PhraseModal,
     ExportModal,
     SettingsModal,
+    ExitConfirmModal,
     Toast
   },
   setup() {
@@ -284,6 +292,7 @@ export default {
     const showPhraseModal = ref(false)
     const showExportModal = ref(false)
     const showSettingsModal = ref(false)
+    const showExitConfirmModal = ref(false)
     const editingPhrase = ref(null)
     const capturedText = ref('')
     
@@ -563,6 +572,19 @@ export default {
       showSettingsModal.value = false
     }
     
+    const openExitConfirmModal = () => {
+      showExitConfirmModal.value = true
+    }
+    
+    const closeExitConfirmModal = () => {
+      showExitConfirmModal.value = false
+    }
+    
+    const handleExitChoice = (choice) => {
+      electronAPI.sendExitChoice(choice)
+      closeExitConfirmModal()
+    }
+    
     const showToast = (message, type = 'info') => {
       toast.message = message
       toast.type = type
@@ -602,6 +624,10 @@ export default {
       electronAPI.onShowAbout(() => {
         openSettingsModal()
       })
+      
+      electronAPI.onShowExitConfirm(() => {
+        openExitConfirmModal()
+      })
     })
     
     return {
@@ -617,6 +643,7 @@ export default {
       showPhraseModal,
       showExportModal,
       showSettingsModal,
+      showExitConfirmModal,
       editingPhrase,
       capturedText,
       toast,
@@ -647,6 +674,9 @@ export default {
       handleExport,
       openSettingsModal,
       closeSettingsModal,
+      openExitConfirmModal,
+      closeExitConfirmModal,
+      handleExitChoice,
       showToast,
       hideToast
     }

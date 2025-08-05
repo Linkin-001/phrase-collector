@@ -29,6 +29,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
   onNewPhrase: (callback) => ipcRenderer.on('new-phrase', callback),
   onExportData: (callback) => ipcRenderer.on('export-data', callback),
   onShowAbout: (callback) => ipcRenderer.on('show-about', callback),
+  onShowExitConfirm: (callback) => ipcRenderer.on('show-exit-confirm', callback),
+  
+  // Exit choice
+  sendExitChoice: (choice) => ipcRenderer.send('exit-choice', choice),
   
   // Remove listeners
   removeAllListeners: (channel) => ipcRenderer.removeAllListeners(channel),
