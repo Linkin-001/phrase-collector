@@ -1,3 +1,4 @@
+"use strict";
 const {
   app,
   BrowserWindow,
@@ -5,25 +6,17 @@ const {
   clipboard,
   ipcMain,
   Menu,
+  dialog,
+  shell
 } = require("electron");
 const path = require("path");
-const Database = require("./src/database");
+const Database = require(path.join(__dirname, "database"));
 const { getSelectionText } = require("@xitanggg/node-selection");
-
-// 只在开发环境中加载 electron-reload
-if (process.env.NODE_ENV === 'development' || !app.isPackaged) {
-  const electronReload = require('electron-reload');
-  // 监听渲染进程相关的文件（如 HTML、CSS、JS 等）
-  electronReload(path.join(__dirname, 'src'), { // 资源目录
-    electron: path.join(__dirname, 'node_modules', '.bin', 'electron'), // electron 可执行文件路径
-    hardResetMethod: 'reload' // 文件变化时刷新渲染进程（不重启主进程）
-  });
+if (require("electron-squirrel-startup")) {
+  app.quit();
 }
-
 let mainWindow;
 let database;
-
-// 创建主窗口
 const createWindow = () => {
   mainWindow = new BrowserWindow({
     width: 1200,
@@ -31,44 +24,41 @@ const createWindow = () => {
     minWidth: 800,
     minHeight: 600,
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
-      enableRemoteModule: true,
+      nodeIntegration: false,
+      contextIsolation: true,
+      preload: path.join(__dirname, "preload.js")
     },
-    icon: path.join(__dirname, "assets/icon.svg"),
-    show: false,
+    icon: path.join(__dirname, "../assets/icon.svg"),
+    show: false
   });
-
-  mainWindow.loadFile("src/renderer/index.html");
-
-  // 窗口准备好后显示
+  {
+    mainWindow.loadURL("http://localhost:3000");
+  }
   mainWindow.once("ready-to-show", () => {
     mainWindow.show();
   });
-
-  // 开发环境下打开开发者工具
   if (process.env.NODE_ENV === "development") {
     mainWindow.webContents.openDevTools();
   }
+  mainWindow.on("closed", () => {
+    app.quit();
+  });
 };
-
-// 注册全局快捷键
 const registerGlobalShortcuts = () => {
-  // Ctrl+Q 快速获取用户鼠标选中文本
-  globalShortcut.register("CommandOrControl+Q", () => {
+  const success = globalShortcut.register("CommandOrControl+Q", async () => {
+    console.log("Ctrl+Q 快捷键被触发");
     try {
-      // 直接调用三方库
       const selectedText = getSelectionText();
-
-      // 显示窗口
+      console.log("获取到的选中文本:", selectedText);
       mainWindow.show();
       mainWindow.focus();
-
       if (selectedText && selectedText.trim()) {
-        // 发送剪贴板内容到渲染进程
-        mainWindow.webContents.send("quick-capture", selectedText.trim());
+        console.log("发送快速捕获事件，文本:", selectedText.trim());
+        mainWindow.webContents.send("quick-capture", {
+          text: selectedText.trim()
+        });
       } else {
-        // 如果剪贴板为空，显示提示
+        console.log("没有选中文本，发送空捕获事件");
         mainWindow.webContents.send("quick-capture-empty");
       }
     } catch (error) {
@@ -78,25 +68,12 @@ const registerGlobalShortcuts = () => {
       mainWindow.webContents.send("quick-capture-empty");
     }
   });
-
- 
-
-  // Ctrl+Alt+Q 直接打开窗口
-  globalShortcut.register("CommandOrControl+Alt+Q", () => {
-    mainWindow.show();
-    mainWindow.focus();
-    mainWindow.webContents.send("quick-capture-empty");
-  });
-
-  // Ctrl+Shift+F 聚焦搜索框
-  globalShortcut.register("CommandOrControl+Shift+F", () => {
-    mainWindow.show();
-    mainWindow.focus();
-    mainWindow.webContents.send("focus-search");
-  });
+  if (success) {
+    console.log("全局快捷键 Ctrl+Q 注册成功");
+  } else {
+    console.error("全局快捷键 Ctrl+Q 注册失败");
+  }
 };
-
-// 设置应用菜单
 const setApplicationMenu = () => {
   const template = [
     {
@@ -104,68 +81,61 @@ const setApplicationMenu = () => {
       submenu: [
         {
           label: "新建短语",
-          accelerator: "CommandOrControl+N",
           click: () => {
             mainWindow.webContents.send("new-phrase");
-          },
+          }
         },
         {
           label: "导出数据",
-          accelerator: "CommandOrControl+E",
           click: () => {
             mainWindow.webContents.send("export-data");
-          },
+          }
         },
         { type: "separator" },
         {
           label: "退出",
-          accelerator: process.platform === "darwin" ? "Cmd+Q" : "Ctrl+Q",
           click: () => {
             app.quit();
-          },
-        },
-      ],
+          }
+        }
+      ]
     },
     {
       label: "编辑",
       submenu: [
-        { label: "撤销", accelerator: "CommandOrControl+Z", role: "undo" },
+        { label: "撤销", role: "undo" },
         {
           label: "重做",
-          accelerator: "Shift+CommandOrControl+Z",
-          role: "redo",
+          role: "redo"
         },
         { type: "separator" },
-        { label: "剪切", accelerator: "CommandOrControl+X", role: "cut" },
-        { label: "复制", accelerator: "CommandOrControl+C", role: "copy" },
-        { label: "粘贴", accelerator: "CommandOrControl+V", role: "paste" },
-      ],
+        { label: "剪切", role: "cut" },
+        { label: "复制", role: "copy" },
+        { label: "粘贴", role: "paste" }
+      ]
     },
     {
       label: "查看",
       submenu: [
         {
           label: "重新加载",
-          accelerator: "CommandOrControl+R",
-          role: "reload",
+          role: "reload"
         },
         {
           label: "强制重新加载",
-          accelerator: "CommandOrControl+Shift+R",
-          role: "forceReload",
+          role: "forceReload"
         },
-        { label: "开发者工具", accelerator: "F12", role: "toggleDevTools" },
+        { label: "开发者工具", role: "toggleDevTools" },
         { type: "separator" },
         {
           label: "实际大小",
-          accelerator: "CommandOrControl+0",
-          role: "resetZoom",
+          role: "resetZoom"
         },
-        { label: "放大", accelerator: "CommandOrControl+Plus", role: "zoomIn" },
-        { label: "缩小", accelerator: "CommandOrControl+-", role: "zoomOut" },
+        { label: "放大", role: "zoomIn" },
+        { label: "缩小", role: "zoomOut" },
         { type: "separator" },
-        { label: "全屏", accelerator: "F11", role: "togglefullscreen" },
-      ],
+        { label: "全屏", role: "togglefullscreen" }
+      ]
     },
     {
       label: "帮助",
@@ -174,72 +144,50 @@ const setApplicationMenu = () => {
           label: "关于",
           click: () => {
             mainWindow.webContents.send("show-about");
-          },
-        },
-      ],
-    },
+          }
+        }
+      ]
+    }
   ];
-
   const menu = Menu.buildFromTemplate(template);
   Menu.setApplicationMenu(menu);
 };
-if (require('electron-squirrel-startup')) app.quit();
-// 应用准备就绪
 app.whenReady().then(async () => {
-  // 初始化数据库
   database = new Database();
   await database.init();
-
-
   createWindow();
   registerGlobalShortcuts();
   setApplicationMenu();
-
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {
       createWindow();
     }
   });
 });
-
-// 所有窗口关闭时
 app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") {
-    app.quit();
-  }
+  app.quit();
 });
-
-// 应用退出前
 app.on("will-quit", () => {
-  // 注销所有快捷键
   globalShortcut.unregisterAll();
 });
-
-// IPC 通信处理
 ipcMain.handle("get-phrases", async (event, options = {}) => {
   return await database.getPhrases(options);
 });
-
 ipcMain.handle("add-phrase", async (event, phraseData) => {
   return await database.addPhrase(phraseData);
 });
-
 ipcMain.handle("update-phrase", async (event, id, phraseData) => {
   return await database.updatePhrase(id, phraseData);
 });
-
 ipcMain.handle("delete-phrase", async (event, id) => {
   return await database.deletePhrase(id);
 });
-
 ipcMain.handle("search-phrases", async (event, query) => {
   return await database.searchPhrases(query);
 });
-
 ipcMain.handle("get-phrase-stats", async () => {
   return await database.getPhraseStats();
 });
-
 ipcMain.handle("export-phrases", async (event, format) => {
   return await database.exportPhrases(format);
 });

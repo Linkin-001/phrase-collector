@@ -82,8 +82,11 @@ function setupEventListeners() {
 // 设置IPC监听器
 function setupIpcListeners() {
     // 快速捕获
-    ipcRenderer.on('quick-capture', (event, text) => {
-        openPhraseModal(null, { text });
+    ipcRenderer.on('quick-capture', (event, data) => {
+        // 只预填充文本内容
+        const prefillData = { text: data.text };
+        
+        openPhraseModal(null, prefillData);
         showToast('已捕获文本，请完善信息后保存', 'success');
     });
 
@@ -91,12 +94,6 @@ function setupIpcListeners() {
     ipcRenderer.on('quick-capture-empty', () => {
         openPhraseModal();
         showToast('未检测到选中文本，请手动输入或先复制文本到剪贴板', 'warning');
-    });
-
-    // 聚焦搜索
-    ipcRenderer.on('focus-search', () => {
-        elements.searchInput.focus();
-        elements.searchInput.select();
     });
 
     // 新建短语
@@ -182,26 +179,8 @@ function createPhraseCard(phrase) {
     card.innerHTML = `
         <div class="phrase-text">${highlightedText}</div>
         
-        ${phrase.selectionContext ? `
-            <div class="phrase-context">
-                <i class="bi bi-quote"></i> ${phrase.selectionContext}
-            </div>
-        ` : ''}
-        
         <div class="phrase-meta d-flex justify-content-between align-items-center">
-            <div>
-                ${phrase.source ? `
-                    <a href="#" class="source-link" onclick="openSource('${phrase.source}')">
-                        <i class="bi bi-link-45deg"></i>
-                        ${truncateText(phrase.source, 50)}
-                    </a>
-                ` : ''}
-                ${phrase.appName ? `
-                    <span class="badge bg-secondary ms-2">
-                        <i class="bi bi-app"></i> ${phrase.appName}
-                    </span>
-                ` : ''}
-            </div>
+            <div></div>
             <span class="time-ago">${timeAgo}</span>
         </div>
         
@@ -409,9 +388,6 @@ async function loadPhraseForEdit(phraseId) {
         
         if (phrase) {
             document.getElementById('phraseText').value = phrase.text;
-            document.getElementById('phraseSource').value = phrase.source || '';
-            document.getElementById('phraseAppName').value = phrase.appName || '';
-            document.getElementById('phraseContext').value = phrase.selectionContext || '';
             document.getElementById('phraseIsUnknown').checked = phrase.isUnknown;
             
             if (phrase.tags) {
@@ -433,9 +409,6 @@ async function savePhrase() {
     
     const phraseData = {
         text: document.getElementById('phraseText').value.trim(),
-        source: document.getElementById('phraseSource').value.trim(),
-        appName: document.getElementById('phraseAppName').value.trim(),
-        selectionContext: document.getElementById('phraseContext').value.trim(),
         isUnknown: document.getElementById('phraseIsUnknown').checked,
         tags: document.getElementById('phraseTags').value
             .split(',')
@@ -533,26 +506,6 @@ async function exportData() {
 
 // 键盘快捷键处理
 function handleKeyboardShortcuts(event) {
-    if (event.ctrlKey || event.metaKey) {
-        switch (event.key) {
-            case 'n':
-                event.preventDefault();
-                openPhraseModal();
-                break;
-            case 'e':
-                event.preventDefault();
-                elements.exportModal.show();
-                break;
-            case 'f':
-                if (event.shiftKey) {
-                    event.preventDefault();
-                    elements.searchInput.focus();
-                    elements.searchInput.select();
-                }
-                break;
-        }
-    }
-    
     if (event.key === 'Escape') {
         // 关闭模态框
         elements.phraseModal.hide();
@@ -634,13 +587,9 @@ function showToast(message, type = 'info') {
     elements.toast.show();
 }
 
-function openSource(source) {
-    if (source.startsWith('http')) {
-        require('electron').shell.openExternal(source);
-    } else {
-        showToast('无法打开此来源', 'warning');
-    }
-}
+
+
+
 
 // 全局函数（供HTML调用）
 window.editPhrase = editPhrase;
@@ -649,4 +598,3 @@ window.toggleUnknown = toggleUnknown;
 window.deletePhrase = deletePhrase;
 window.filterByTag = filterByTag;
 window.changePage = changePage;
-window.openSource = openSource;

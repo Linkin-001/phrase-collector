@@ -1,0 +1,158 @@
+<template>
+  <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">导出数据</h5>
+          <button 
+            type="button" 
+            class="btn-close" 
+            @click="$emit('close')"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">选择导出格式</label>
+            
+            <div class="form-check">
+              <input 
+                id="exportJson"
+                v-model="selectedFormat" 
+                class="form-check-input" 
+                type="radio" 
+                value="json"
+              >
+              <label class="form-check-label" for="exportJson">
+                <strong>JSON 格式</strong>
+                <div class="text-muted small">包含完整的数据结构，适合备份和迁移</div>
+              </label>
+            </div>
+            
+            <div class="form-check">
+              <input 
+                id="exportCsv"
+                v-model="selectedFormat" 
+                class="form-check-input" 
+                type="radio" 
+                value="csv"
+              >
+              <label class="form-check-label" for="exportCsv">
+                <strong>CSV 格式</strong>
+                <div class="text-muted small">表格格式，可用 Excel 等软件打开</div>
+              </label>
+            </div>
+            
+            <div class="form-check">
+              <input 
+                id="exportTxt"
+                v-model="selectedFormat" 
+                class="form-check-input" 
+                type="radio" 
+                value="txt"
+              >
+              <label class="form-check-label" for="exportTxt">
+                <strong>TXT 格式</strong>
+                <div class="text-muted small">纯文本格式，仅包含短语内容</div>
+              </label>
+            </div>
+          </div>
+          
+          <div class="alert alert-info">
+            <i class="bi bi-info-circle me-2"></i>
+            导出的文件将保存到您的下载文件夹中
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button 
+            type="button" 
+            class="btn btn-secondary" 
+            @click="$emit('close')"
+          >
+            取消
+          </button>
+          <button 
+            type="button" 
+            class="btn btn-primary" 
+            @click="handleExport"
+            :disabled="!selectedFormat"
+          >
+            <i class="bi bi-download me-1"></i>
+            导出
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import { ref } from 'vue'
+
+export default {
+  name: 'ExportModal',
+  emits: ['export', 'close'],
+  setup(props, { emit }) {
+    const selectedFormat = ref('json')
+    
+    const handleExport = () => {
+      if (selectedFormat.value) {
+        emit('export', selectedFormat.value)
+      }
+    }
+    
+    return {
+      selectedFormat,
+      handleExport
+    }
+  }
+}
+</script>
+
+<style scoped>
+.modal {
+  animation: fadeIn 0.15s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-dialog {
+  animation: slideIn 0.15s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-50px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.form-check {
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  border: 1px solid #dee2e6;
+  border-radius: 0.375rem;
+  transition: all 0.15s ease-in-out;
+}
+
+.form-check:hover {
+  background-color: #f8f9fa;
+  border-color: #adb5bd;
+}
+
+.form-check-input:checked + .form-check-label {
+  color: #0d6efd;
+}
+
+.form-check-input:checked ~ * {
+  color: inherit;
+}
+</style>
