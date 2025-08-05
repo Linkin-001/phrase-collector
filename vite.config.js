@@ -9,7 +9,7 @@ export default defineConfig({
   base: './',
   build: {
     outDir: resolve(__dirname, 'dist/renderer'),
-    emptyOutDir: true,
+    emptyOutDir: false,
   },
   resolve: {
     alias: {

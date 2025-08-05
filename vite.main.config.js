@@ -10,7 +10,7 @@ export default defineConfig({
       name: 'copy-database',
       writeBundle() {
         const srcPath = path.resolve('src/database.js');
-        const destPath = path.resolve('.vite/build/database.js');
+        const destPath = path.resolve('dist/database.js');
         copyFileSync(srcPath, destPath);
       }
     }
@@ -31,7 +31,7 @@ export default defineConfig({
         entryFileNames: 'main.js',
       },
     },
-    outDir: '.vite/build',
+    outDir: 'dist',
     emptyOutDir: false,
   },
   resolve: {

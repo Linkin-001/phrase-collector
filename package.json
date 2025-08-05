@@ -2,20 +2,16 @@
   "name": "phrase-collector",
   "version": "1.0.0",
   "description": "一款基于 Electron 的短语应用，旨在帮助用户在阅读文档时高效收集、管理和复习重要短语",
-  "main": ".vite/build/main.js",
+  "main": "dist/main.js",
   "license": "MIT",
   "scripts": {
-    "start": "electron-forge start",
-    "package": "electron-forge package",
-    "make": "electron-forge make",
-    "make:win": "electron-forge make --platform=win32",
-    "make:mac": "electron-forge make --platform=darwin",
-    "make:linux": "electron-forge make --platform=linux",
-    "build": "electron-builder",
-    "build:win": "electron-builder --win",
-    "build:mac": "electron-builder --mac",
-    "build:linux": "electron-builder --linux",
-    "build:all": "electron-builder --win --mac --linux"
+    "start": "npm run build:dev && electron .",
+    "build:dev": "vite build --config vite.main.config.js && vite build --config vite.preload.config.js && vite build --config vite.config.js",
+    "build": "npm run build:dev && electron-builder",
+    "build:win": "npm run build:dev && electron-builder --win",
+    "build:mac": "npm run build:dev && electron-builder --mac",
+    "build:linux": "npm run build:dev && electron-builder --linux",
+    "build:all": "npm run build:dev && electron-builder --win --mac --linux"
   },
   "devDependencies": {
     "@electron-forge/cli": "^7.8.2",
@@ -47,8 +43,7 @@
       "output": "dist"
     },
     "files": [
-      ".vite/build/**/*",
-      "dist/renderer/**/*",
+      "dist/**/*",
       "src/database.js",
       "node_modules/**/*",
       "package.json"
