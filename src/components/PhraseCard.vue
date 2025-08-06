@@ -1,6 +1,6 @@
 <template>
   <div class="col-md-6 col-lg-6">
-    <div class="card  phrase-card" :class="{ 'border-warning': phrase.isUnknown }">
+    <div class="card phrase-card" :class="{ 'border-warning': phrase.isUnknown }">
       <div class="card-body d-flex flex-column p-0 justify-content-between">
         <div class="d-flex justify-content-between align-items-start mb-0">
           <div class="flex-grow-1 w-100">
@@ -176,6 +176,10 @@ export default {
   -webkit-box-orient: vertical;
   border-left: 5px solid #ff399494;
   padding-left: 0.5rem;
+}
+
+.phrase-card.border-warning .phrase-text {
+  border-left: 5px solid #ffc107;
 }
 
 .phrase-action-container {

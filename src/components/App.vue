@@ -95,31 +95,46 @@
             <!-- 过滤器 -->
             <div class="card mb-3">
               <div class="card-body">
-                <h6 class="card-title">过滤器</h6>
-                <div class="mb-2">
-                  <label class="form-label">状态</label>
-                  <select 
-                    v-model="filters.status" 
-                    @change="applyFilters"
-                    class="form-select form-select-sm"
-                  >
-                    <option value="">全部</option>
-                    <option value="unknown">未知</option>
-                    <option value="known">已知</option>
-                  </select>
-                </div>
-                <div class="mb-2">
-                  <label class="form-label">排序</label>
-                  <select 
-                    v-model="filters.sort" 
-                    @change="applyFilters"
-                    class="form-select form-select-sm"
-                  >
-                    <option value="timestamp-desc">最新优先</option>
-                    <option value="timestamp-asc">最旧优先</option>
-                    <option value="text-asc">按内容A-Z</option>
-                    <option value="text-desc">按内容Z-A</option>
-                  </select>
+                <h6 class="card-title modern-section-title">
+                  <i class="bi bi-funnel"></i>
+                  智能过滤
+                </h6>
+                <div class="modern-filter-container">
+                  <div class="modern-filter-item">
+                    <label class="modern-filter-label">
+                      <i class="bi bi-circle-fill"></i>
+                      状态筛选
+                    </label>
+                    <div class="modern-select-wrapper">
+                      <select 
+                        v-model="filters.status" 
+                        @change="applyFilters"
+                        class="modern-select"
+                      >
+                        <option value="">🔍 全部状态</option>
+                        <option value="unknown">❓ 未知短语</option>
+                        <option value="known">✅ 已知短语</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="modern-filter-item">
+                    <label class="modern-filter-label">
+                      <i class="bi bi-sort-down"></i>
+                      排序方式
+                    </label>
+                    <div class="modern-select-wrapper">
+                      <select 
+                        v-model="filters.sort" 
+                        @change="applyFilters"
+                        class="modern-select"
+                      >
+                        <option value="timestamp-desc">🕒 最新优先</option>
+                        <option value="timestamp-asc">⏰ 最旧优先</option>
+                        <option value="text-asc">🔤 内容A-Z</option>
+                        <option value="text-desc">🔡 内容Z-A</option>
+                      </select>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
