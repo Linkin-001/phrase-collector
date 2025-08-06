@@ -1,5 +1,5 @@
 <template>
-  <div class="col-md-6 col-lg-6">
+  <div class="col-12 col-lg-6 col-xl-4">
     <div class="card phrase-card" :class="{ 'border-warning': phrase.isUnknown }">
       <div class="card-body d-flex flex-column p-0 justify-content-between">
         <div class="d-flex justify-content-between align-items-start mb-0">
