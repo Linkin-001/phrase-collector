@@ -184,7 +184,7 @@
             </div>
           </div>
         </div>
-        <div class="modal-footer modern-modal-footer justify-content-center">
+        <div class="modal-footer modern-modal-footer">
           <button type="button" class="btn btn-outline-secondary modern-btn-cancel" @click="$emit('close')">
             <i class="bi bi-x-circle me-2"></i>关闭
           </button>
