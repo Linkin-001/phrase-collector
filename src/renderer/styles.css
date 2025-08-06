@@ -591,14 +591,25 @@ body {
   transform: scale(1.1);
 }
 
-/* Toast 通知样式 */
-.toast {
-  border: none;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+/* Toast 通知样式 - 现代扁平化设计 */
+.toast-container {
+  z-index: 1060;
 }
 
-.toast-header {
+/* 确保Toast组件的scoped样式优先级 */
+.toast.show {
+  display: block !important;
+}
+
+/* 移除Bootstrap默认样式，让组件样式生效 */
+.toast:not(.custom-toast) {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+/* 只对没有特定背景色类的toast-header应用默认样式 */
+.toast-header:not(.bg-success):not(.bg-danger):not(.bg-warning):not(.bg-primary) {
   background: linear-gradient(135deg, #f8f9fa, #e9ecef);
   border-bottom: 1px solid #dee2e6;
 }
