@@ -6,12 +6,13 @@
   "license": "MIT",
   "scripts": {
     "start": "npm run build:dev && electron .",
+    "dev": "cross-env NODE_ENV=development npm run build:dev && cross-env NODE_ENV=development electron .",
     "build:dev": "vite build --config vite.main.config.js && vite build --config vite.preload.config.js && vite build --config vite.config.js",
-    "build": "npm run build:dev && electron-builder",
-    "build:win": "npm run build:dev && electron-builder --win",
-    "build:mac": "npm run build:dev && electron-builder --mac",
-    "build:linux": "npm run build:dev && electron-builder --linux",
-    "build:all": "npm run build:dev && electron-builder --win --mac --linux"
+    "build": "cross-env NODE_ENV=production npm run build:dev && electron-builder",
+    "build:win": "cross-env NODE_ENV=production npm run build:dev && electron-builder --win",
+    "build:mac": "cross-env NODE_ENV=production npm run build:dev && electron-builder --mac",
+    "build:linux": "cross-env NODE_ENV=production npm run build:dev && electron-builder --linux",
+    "build:all": "cross-env NODE_ENV=production npm run build:dev && electron-builder --win --mac --linux"
   },
   "devDependencies": {
     "@electron-forge/cli": "^7.8.2",
@@ -25,6 +26,7 @@
     "@electron-forge/plugin-vite": "^7.8.2",
     "@electron/fuses": "^2.0.0",
     "@vitejs/plugin-vue": "^5.2.4",
+    "cross-env": "^7.0.3",
     "electron": "^37.2.5",
     "electron-builder": "^26.0.12",
     "electron-rebuild": "^3.2.9",
@@ -46,7 +48,8 @@
       "dist/**/*",
       "src/database.js",
       "node_modules/**/*",
-      "package.json"
+      "package.json",
+      "!src/hot-reload.js"
     ],
     "win": {
       "target": [

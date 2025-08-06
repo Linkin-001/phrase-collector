@@ -30,6 +30,22 @@ export default defineConfig({
       output: {
         entryFileNames: 'main.js',
       },
+      // 在生产构建时排除热重载模块
+      plugins: [
+        {
+          name: 'exclude-hot-reload',
+          resolveId(id) {
+            if (id.includes('hot-reload') && process.env.NODE_ENV === 'production') {
+              return { id: 'virtual:hot-reload', external: false };
+            }
+          },
+          load(id) {
+            if (id === 'virtual:hot-reload') {
+              return 'module.exports = class HotReload { constructor() {} init() {} destroy() {} };';
+            }
+          }
+        }
+      ]
     },
     outDir: 'dist',
     emptyOutDir: false,

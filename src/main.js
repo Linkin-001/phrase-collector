@@ -22,6 +22,7 @@ let mainWindow;
 let database;
 let tray = null;
 let isQuitting = false;
+let hotReload = null;
 
 // 创建主窗口
 const createWindow = () => {
@@ -41,12 +42,8 @@ const createWindow = () => {
     show: false,
   });
 
-  // Load the app using built files in production, dev server only in development
-  if (process.env.NODE_ENV === "development" && MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-    mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
-  } else {
-    mainWindow.loadFile(path.join(__dirname, 'renderer/index.html'));
-  }
+  // Load the app using built files
+  mainWindow.loadFile(path.join(__dirname, 'renderer/index.html'));
 
   // 窗口准备好后显示
   mainWindow.once("ready-to-show", () => {
@@ -88,6 +85,17 @@ const createWindow = () => {
       app.quit();
     }
   });
+
+  // 初始化热重载（仅开发环境）
+  if (process.env.NODE_ENV === 'development') {
+    try {
+      const HotReload = require(path.join(__dirname, '../src/hot-reload'));
+      hotReload = new HotReload(mainWindow);
+      hotReload.init();
+    } catch (error) {
+      console.log('Hot reload module not available:', error.message);
+    }
+  }
 };
 
 // 注册全局快捷键
@@ -316,6 +324,12 @@ app.on("window-all-closed", () => {
 app.on("will-quit", () => {
   // 注销所有快捷键
   globalShortcut.unregisterAll();
+  
+  // 清理热重载资源
+  if (hotReload) {
+    hotReload.destroy();
+    hotReload = null;
+  }
   
   // 销毁托盘图标
   if (tray) {
