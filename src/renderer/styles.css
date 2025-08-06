@@ -149,12 +149,7 @@ body {
 }
 
 .modern-tag:hover {
-  background: linear-gradient(
-    135deg,
-    rgba(0, 123, 255, 0.2) 0%,
-    rgba(0, 123, 255, 0.1) 100%
-  );
-  border-color: rgba(0, 123, 255, 0.4);
+
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
 }
@@ -187,7 +182,6 @@ body {
 }
 
 .modern-tag.active:hover i {
-  color: white;
   transform: scale(1.2);
 }
 
@@ -887,7 +881,7 @@ kbd {
 /* 现代化标签容器 */
 .modern-tags-container {
     display: flex;
-    padding: .5rem 0;
+    padding: 14px;
     flex-wrap: wrap;
     gap: .6rem;
     -webkit-backdrop-filter: blur(15px);
@@ -937,7 +931,7 @@ kbd {
   gap: 0.25rem;
   padding: 0.5rem 0.9rem;
   font-size: 0.8rem;
-  font-weight: 600;
+  font-weight: 400;
   border-radius: 20px;
   background: linear-gradient(
     135deg,
@@ -974,11 +968,6 @@ kbd {
 }
 
 .modern-tag:hover {
-  background: linear-gradient(
-    135deg,
-    rgba(0, 123, 255, 0.2) 0%,
-    rgba(0, 123, 255, 0.1) 100%
-  );
   border-color: rgba(0, 123, 255, 0.4);
   transform: translateY(-2px) scale(1.02);
   box-shadow: 0 6px 20px rgba(0, 123, 255, 0.2);
