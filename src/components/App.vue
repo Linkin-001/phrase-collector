@@ -1,36 +1,32 @@
 <template>
   <div class="d-flex flex-column h-100">
+    <!-- 自定义标题栏 -->
+    <div class="custom-titlebar">
+      <div class="titlebar-drag-region">
+        <div class="titlebar-title">
+          <i class="bi bi-collection"></i>
+          Phrase Collector
+        </div>
+      </div>
+      <div class="titlebar-controls">
+        <button class="titlebar-button" @click="minimizeWindow" title="最小化">
+          <i class="bi bi-dash"></i>
+        </button>
+        <button class="titlebar-button" @click="maximizeWindow" title="最大化">
+          <i class="bi bi-square"></i>
+        </button>
+        <button class="titlebar-button close-button" @click="closeWindow" title="关闭">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+    </div>
+    
     <!-- 顶部导航栏 -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
       <div class="container-fluid">
         <a class="navbar-brand" href="#">
-          <i class="bi bi-collection"></i>
-          Phrase Collector
         </a>
         
-        <!-- 搜索框 -->
-        <div class="d-flex flex-grow-1 mx-3">
-          <div class="input-group">
-            <span class="input-group-text">
-              <i class="bi bi-search"></i>
-            </span>
-            <input 
-              type="text" 
-              v-model="searchQuery" 
-              @input="handleSearch"
-              class="form-control" 
-              placeholder="搜索短语..."
-            >
-            <button 
-              class="btn text-secondary bg-white btn-outline-light" 
-              type="button" 
-              @click="clearSearch"
-            >
-              <i class="bi bi-x-lg"></i>
-            </button>
-          </div>
-        </div>
-
         <!-- 工具按钮 -->
         <div class="d-flex gap-2">
           <button 
@@ -53,13 +49,6 @@
             title="设置"
           >
             <i class="bi bi-gear"></i>
-          </button>
-          <button 
-            class="btn btn-outline-light" 
-            @click="openExitConfirmModal" 
-            title="关闭程序"
-          >
-            <i class="bi bi-x-circle"></i>
           </button>
         </div>
       </div>
@@ -174,6 +163,31 @@
         <!-- 主内容区 -->
         <div class="col-md-9">
           <div class="p-3 h-100 d-flex flex-column">
+            <!-- 搜索框 -->
+             <div class="mb-4">
+               <div class="modern-search-container">
+                 <div class="search-icon">
+                   <i class="bi bi-search"></i>
+                 </div>
+                 <input 
+                   type="text" 
+                   v-model="searchQuery" 
+                   @input="handleSearch"
+                   class="modern-search-input" 
+                   placeholder="搜索你的短语收藏..."
+                 >
+                 <button 
+                   v-if="searchQuery"
+                   class="clear-search-btn" 
+                   type="button" 
+                   @click="clearSearch"
+                   title="清除搜索"
+                 >
+                   <i class="bi bi-x-circle-fill"></i>
+                 </button>
+               </div>
+             </div>
+            
             <!-- 短语列表 -->
             <div class="flex-grow-1">
               <div v-if="loading" class="text-center py-4">
@@ -652,6 +666,19 @@ export default {
       toast.show = false
     }
     
+    // 窗口控制方法
+    const minimizeWindow = () => {
+      electronAPI.minimizeWindow()
+    }
+    
+    const maximizeWindow = () => {
+      electronAPI.maximizeWindow()
+    }
+    
+    const closeWindow = () => {
+      electronAPI.closeWindow()
+    }
+    
     // 生命周期
     onMounted(() => {
       loadPhrases()
@@ -740,7 +767,10 @@ export default {
       closeDeleteConfirmModal,
       handleDeleteChoice,
       showToast,
-      hideToast
+      hideToast,
+      minimizeWindow,
+      maximizeWindow,
+      closeWindow
     }
   }
 }
@@ -757,5 +787,166 @@ export default {
       transparent 83%),
     radial-gradient(circle at 89% 89%, rgba(187, 225, 250, 0.7) 0%, transparent 99%);
   color: black;
+}
+
+/* 自定义标题栏样式 */
+.custom-titlebar {
+  display: flex;
+  height: 32px;
+  background: #0d6efd;
+  color: white;
+  user-select: none;
+  position: relative;
+  z-index: 1000;
+}
+
+.titlebar-drag-region {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  -webkit-app-region: drag;
+}
+
+.titlebar-title {
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.titlebar-controls {
+  display: flex;
+  -webkit-app-region: no-drag;
+}
+
+.titlebar-button {
+  width: 46px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  transition: background-color 0.2s;
+}
+
+.titlebar-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.titlebar-button.close-button:hover {
+  background: #e81123;
+}
+
+.titlebar-button:active {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.titlebar-button.close-button:active {
+  background: #c50e1f;
+}
+
+/* 现代化搜索框样式 */
+.modern-search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border: 2px solid #e9ecef;
+  border-radius: 16px;
+  padding: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+}
+
+.modern-search-container:hover {
+  border-color: #0d6efd;
+  box-shadow: 0 4px 16px rgba(13, 110, 253, 0.1);
+  transform: translateY(-1px);
+}
+
+.modern-search-container:focus-within {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1), 0 4px 16px rgba(13, 110, 253, 0.15);
+  transform: translateY(-1px);
+}
+
+.search-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  color: #6c757d;
+  font-size: 16px;
+  transition: color 0.3s ease;
+}
+
+.modern-search-container:focus-within .search-icon {
+  color: #0d6efd;
+}
+
+.modern-search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 14px 16px 14px 0;
+  font-size: 15px;
+  color: #212529;
+  line-height: 1.4;
+}
+
+.modern-search-input::placeholder {
+  color: #adb5bd;
+  font-weight: 400;
+}
+
+.clear-search-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin-right: 4px;
+  border: none;
+  background: transparent;
+  color: #6c757d;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 16px;
+}
+
+.clear-search-btn:hover {
+  background: #f8f9fa;
+  color: #dc3545;
+  transform: scale(1.1);
+}
+
+.clear-search-btn:active {
+  transform: scale(0.95);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .modern-search-container {
+    border-radius: 12px;
+  }
+  
+  .search-icon {
+    width: 44px;
+    height: 44px;
+  }
+  
+  .modern-search-input {
+    padding: 12px 12px 12px 0;
+    font-size: 14px;
+  }
 }
 </style>

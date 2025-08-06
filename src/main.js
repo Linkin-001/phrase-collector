@@ -31,8 +31,8 @@ const createWindow = () => {
     height: 1000,
     minWidth: 800,
     minHeight: 600,
-    // frame: false,
-    // autoHideMenuBar: true,
+    frame: false,
+    autoHideMenuBar: true,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -433,5 +433,28 @@ ipcMain.handle('open-db-location', async () => {
   } catch (error) {
     console.error('打开数据库位置失败:', error);
     throw error;
+  }
+});
+
+// 窗口控制处理程序
+ipcMain.handle('minimize-window', () => {
+  if (mainWindow) {
+    mainWindow.minimize();
+  }
+});
+
+ipcMain.handle('maximize-window', () => {
+  if (mainWindow) {
+    if (mainWindow.isMaximized()) {
+      mainWindow.unmaximize();
+    } else {
+      mainWindow.maximize();
+    }
+  }
+});
+
+ipcMain.handle('close-window', () => {
+  if (mainWindow) {
+    mainWindow.close();
   }
 });

@@ -38,6 +38,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
   resetExitConfirm: () => ipcRenderer.invoke('reset-exit-confirm'),
   getExitConfirmSettings: () => ipcRenderer.invoke('get-exit-confirm-settings'),
   
+  // Window controls
+  minimizeWindow: () => ipcRenderer.invoke('minimize-window'),
+  maximizeWindow: () => ipcRenderer.invoke('maximize-window'),
+  closeWindow: () => ipcRenderer.invoke('close-window'),
+  
   // Remove listeners
   removeAllListeners: (channel) => ipcRenderer.removeAllListeners(channel),
 });
