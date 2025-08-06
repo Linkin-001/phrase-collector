@@ -127,21 +127,29 @@
             <!-- 标签列表 -->
             <div class="card">
               <div class="card-body">
-                <h6 class="card-title">标签</h6>
-                <div class="d-flex flex-wrap gap-1">
+                <h6 class="card-title modern-section-title">
+                  <i class="bi bi-tags"></i>
+                  标签筛选
+                </h6>
+                <div class="modern-tags-container">
                   <span 
                     v-for="tag in availableTags" 
                     :key="tag.name"
                     @click="toggleTagFilter(tag.name)"
                     :class="[
-                      'badge', 
+                      'modern-tag', 
                       'cursor-pointer',
-                      'tag-badge',
-                      selectedTags.includes(tag.name) ? 'bg-danger' : ''
+                      selectedTags.includes(tag.name) ? 'active' : ''
                     ]"
                   >
-                    {{ tag.name }} ({{ tag.count }})
+                    <i class="bi bi-tag-fill"></i>
+                    {{ tag.name }} 
+                    <span class="tag-count">({{ tag.count }})</span>
                   </span>
+                  <div v-if="availableTags.length === 0" class="empty-tags-message">
+                    <i class="bi bi-tags text-muted"></i>
+                    <span class="text-muted ms-2">暂无标签</span>
+                  </div>
                 </div>
               </div>
             </div>

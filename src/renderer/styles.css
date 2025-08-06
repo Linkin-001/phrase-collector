@@ -132,9 +132,9 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-  padding: 0.4rem 0.8rem;
+  padding: 0.2rem 0.5rem !important;
   font-size: 0.8rem;
-  font-weight: 600;
+  font-weight: 400;
   border-radius: 20px;
   background: linear-gradient(
     135deg,
@@ -160,10 +160,35 @@ body {
 }
 
 .modern-tag.active {
-  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  background: linear-gradient(135deg, #0087ff7d, #6f02ff9e);
+  color: #fff;
+  border: 0 !important;
+  box-shadow: 0 6px 20px #007bff66;
+  transform: translateY(-1px) scale(1.05);
+}
+
+.modern-tag.active::before {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+}
+
+.modern-tag.active:hover {
+  transform: translateY(-3px) scale(1.08);
+  box-shadow: 0 8px 25px rgba(0, 123, 255, 0.5);
+}
+
+.modern-tag.active i {
+  opacity: 1;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.modern-tag.active:hover i {
   color: white;
-  border-color: #007bff;
-  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+  transform: scale(1.2);
 }
 
 .modern-tag-success {
@@ -850,21 +875,56 @@ kbd {
 
 /* 现代化标签容器 */
 .modern-tags-container {
+    display: flex;
+    padding: .5rem 0;
+    flex-wrap: wrap;
+    gap: .6rem;
+    -webkit-backdrop-filter: blur(15px);
+    transition: all .3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+/* 标签计数样式 */
+.tag-count {
+  font-size: 0.7rem;
+  opacity: 0.8;
+  margin-left: 0.25rem;
+  padding: 0.1rem 0.3rem;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.modern-tag.active .tag-count {
+  background: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* 空标签状态样式 */
+.empty-tags-message {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+  align-items: center;
+  justify-content: center;
   padding: 1rem;
-  background: rgba(248, 249, 250, 0.8);
-  border-radius: 12px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  backdrop-filter: blur(10px);
+  font-size: 0.9rem;
+  color: #6c757d;
+  font-style: italic;
+  width: 100%;
+  text-align: center;
+  opacity: 0.7;
+}
+
+.empty-tags-message i {
+  font-size: 1.2rem;
+  opacity: 0.5;
 }
 
 .modern-tag {
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-  padding: 0.4rem 0.8rem;
+  padding: 0.5rem 0.9rem;
   font-size: 0.8rem;
   font-weight: 600;
   border-radius: 20px;
@@ -875,8 +935,31 @@ kbd {
   );
   border: 1px solid rgba(0, 123, 255, 0.2);
   color: #007bff;
+  cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+
+.modern-tag::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left 0.5s;
+}
+
+.modern-tag:hover::before {
+  left: 100%;
 }
 
 .modern-tag:hover {
@@ -886,8 +969,18 @@ kbd {
     rgba(0, 123, 255, 0.1) 100%
   );
   border-color: rgba(0, 123, 255, 0.4);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 20px rgba(0, 123, 255, 0.2);
+}
+
+.modern-tag i {
+  font-size: 0.7rem;
+  opacity: 0.8;
+}
+
+.modern-tag:hover i {
+  opacity: 1;
+  transform: scale(1.1);
 }
 
 .modern-tag-remove {
