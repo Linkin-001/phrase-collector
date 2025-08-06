@@ -250,6 +250,25 @@ class Database {
     await this.saveData();
   }
 
+  // 获取数据库路径
+  getDbPath() {
+    return this.dbPath;
+  }
+
+  // 获取数据库文件大小
+  async getDbSize() {
+    try {
+      if (fs.existsSync(this.dbPath)) {
+        const stats = fs.statSync(this.dbPath);
+        return stats.size;
+      }
+      return 0;
+    } catch (error) {
+      console.error('获取数据库大小失败:', error);
+      return 0;
+    }
+  }
+
   // 关闭数据库连接
   async close() {
     await this.saveData();

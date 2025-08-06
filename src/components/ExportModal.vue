@@ -6,7 +6,7 @@
           <h5 class="modal-title">导出数据</h5>
           <button 
             type="button" 
-            class="btn-close" 
+            class="bi bi-x btn-close" 
             @click="$emit('close')"
           ></button>
         </div>

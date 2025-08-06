@@ -22,11 +22,11 @@
               placeholder="搜索短语..."
             >
             <button 
-              class="btn text-secondary bg-white btn-outline-light fs-3" 
+              class="btn text-secondary bg-white btn-outline-light" 
               type="button" 
               @click="clearSearch"
             >
-              <i class="bi bi-x"></i>
+              <i class="bi bi-x-lg"></i>
             </button>
           </div>
         </div>

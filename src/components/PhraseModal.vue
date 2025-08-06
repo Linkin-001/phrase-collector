@@ -8,7 +8,7 @@
           </h5>
           <button 
             type="button" 
-            class="bi bi-x-lg btn-close" 
+            class="bi bi-x btn-close" 
             @click="$emit('close')"
           ></button>
         </div>

@@ -2,6 +2,11 @@
   <div class="modal fade show d-block modern-modal" tabindex="-1">
     <div class="modal-dialog modal-lg">
       <div class="modal-content modern-modal-content">
+        <!-- 模态框头部 -->
+        <div class="modal-header">
+          <h5 class="modal-title">设置</h5>
+          <button type="button" class="btn-close bi bi-x" @click="$emit('close')" aria-label="关闭"></button>
+        </div>
 
         <div class="modal-body">
           <!-- 标签页导航 -->
@@ -184,11 +189,7 @@
             </div>
           </div>
         </div>
-        <div class="modal-footer modern-modal-footer">
-          <button type="button" class="btn btn-outline-secondary modern-btn-cancel" @click="$emit('close')">
-            <i class="bi bi-x-circle me-2"></i>关闭
-          </button>
-        </div>
+
       </div>
     </div>
   </div>

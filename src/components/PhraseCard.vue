@@ -20,17 +20,20 @@
 
 
           <div class="d-flex justify-content-between align-items-center text-muted small phrase-action-container">
-            <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center flex-grow-1 me-2">
               <span style="font-size: 12px;">{{ formatDate(phrase.timestamp) }}</span>
 
-              <div v-if="phrase.tags && phrase.tags.length > 0" class="ms-3">
-                <span v-for="tag in phrase.tags" :key="tag" class="badge ms-1 tag-badge">
+              <div v-if="phrase.tags && phrase.tags.length > 0" class="ms-3 tags-container">
+                <span v-for="(tag, index) in phrase.tags.slice(0, 3)" :key="tag" class="badge ms-1 tag-badge">
                   {{ tag }}
+                </span>
+                <span v-if="phrase.tags.length > 3" class="badge ms-1 tag-badge-more" :title="phrase.tags.slice(3).join(', ')">
+                  +{{ phrase.tags.length - 3 }}
                 </span>
               </div>
             </div>
 
-            <div class="phrase-actions">
+            <div class="phrase-actions flex-shrink-0">
               <button @click="$emit('toggle-unknown', phrase)" :class="[
                 'btn btn-sm me-1',
                 phrase.isUnknown ? 'btn-warning' : 'btn-outline-secondary',
@@ -134,6 +137,19 @@ export default {
       transparent 83%),
     radial-gradient(circle at 89% 89%, rgba(187, 225, 250, 0.7) 0%, transparent 99%);
   color: black;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+  flex-shrink: 0;
+}
+
+.tag-badge-more {
+  background-color: #6c757d;
+  color: white;
+  white-space: nowrap;
+  flex-shrink: 0;
+  cursor: help;
 }
 
 .phrase-card {
@@ -183,14 +199,32 @@ export default {
 }
 
 .phrase-action-container {
-  display: block;
+  display: flex;
   width: 100%;
   height: 2rem;
+  align-items: center;
+}
+
+.tags-container {
+  max-width: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.25rem;
+  transition: max-width 0.2s ease;
+  height: 100%;
+  align-items: center;
+}
+
+.phrase-card:hover .tags-container {
+  max-width: calc(100% - 140px); /* 为操作按钮预留空间 */
 }
 
 .phrase-actions {
   transition: opacity 0.2s ease;
   display: none;
+  position: relative;
+  z-index: 10;
 }
 
 .phrase-card:hover .phrase-actions {

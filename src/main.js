@@ -400,3 +400,38 @@ ipcMain.handle('get-exit-confirm-settings', async () => {
   const exitBehavior = await database.getSetting('exitBehavior', null);
   return { dontShowExitConfirm, exitBehavior };
 });
+
+// 获取应用信息
+ipcMain.handle('get-app-info', async () => {
+  try {
+    const stats = await database.getPhraseStats();
+    const dbPath = database.getDbPath();
+    
+    return {
+      version: app.getVersion(),
+      buildVersion: process.env.npm_package_version || app.getVersion(),
+      dbPath: dbPath,
+      stats: {
+        total: stats.total || 0,
+        unknown: stats.unknown || 0,
+        dbSize: await database.getDbSize() || 0
+      }
+    };
+  } catch (error) {
+    console.error('获取应用信息失败:', error);
+    throw error;
+  }
+});
+
+// 打开数据库位置
+ipcMain.handle('open-db-location', async () => {
+  try {
+    const dbPath = database.getDbPath();
+    const dbDir = path.dirname(dbPath);
+    await shell.openPath(dbDir);
+    return true;
+  } catch (error) {
+    console.error('打开数据库位置失败:', error);
+    throw error;
+  }
+});
