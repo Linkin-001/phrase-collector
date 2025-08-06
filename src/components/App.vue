@@ -22,7 +22,7 @@
               placeholder="搜索短语..."
             >
             <button 
-              class="btn text-secondary bg-white btn-outline-light fs-1" 
+              class="btn text-secondary bg-white btn-outline-light fs-3" 
               type="button" 
               @click="clearSearch"
             >

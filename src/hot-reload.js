@@ -65,19 +65,37 @@ class HotReload {
     if (this.isReloading || !this.mainWindow) return;
 
     this.isReloading = true;
-    console.log('🔄 Reloading application...');
+    console.log('🔄 Rebuilding and reloading application...');
 
     try {
-      // 重载渲染进程
-      this.mainWindow.webContents.reload();
-      
-      // 如果需要重启主进程（当主进程文件变化时）
-      // this.restartApp();
-      
-      setTimeout(() => {
+      // 先重新构建项目
+      const { spawn } = require('child_process');
+      const buildProcess = spawn('npm', ['run', 'build:dev'], {
+        cwd: process.cwd(),
+        stdio: 'pipe',
+        shell: true
+      });
+
+      buildProcess.on('close', (code) => {
+        if (code === 0) {
+          console.log('✅ Build completed, reloading...');
+          // 构建成功后重载渲染进程
+          this.mainWindow.webContents.reload();
+          
+          setTimeout(() => {
+            this.isReloading = false;
+            console.log('✅ Reload completed');
+          }, 1000);
+        } else {
+          console.error('❌ Build failed, skipping reload');
+          this.isReloading = false;
+        }
+      });
+
+      buildProcess.on('error', (error) => {
+        console.error('❌ Build process error:', error.message);
         this.isReloading = false;
-        console.log('✅ Reload completed');
-      }, 1000);
+      });
     } catch (error) {
       console.error('❌ Reload failed:', error);
       this.isReloading = false;
