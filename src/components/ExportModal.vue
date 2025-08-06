@@ -111,7 +111,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .modal {
   animation: fadeIn 0.15s ease-out;
 }
@@ -157,5 +157,21 @@ export default {
 
 .form-check-input:checked ~ * {
   color: inherit;
+}
+
+// Modern options container styles (moved from styles.css)
+.modern-options-container {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  padding: 1.5rem;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+  }
 }
 </style>
