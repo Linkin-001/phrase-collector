@@ -64,18 +64,7 @@ body {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
-.phrase-card.unknown {
-  border-left: 4px solid #ffc107;
-  background: linear-gradient(90deg, #fff9e6 0%, white 10%);
-}
 
-.phrase-text {
-  font-size: 1.1rem;
-  font-weight: 500;
-  color: #212529;
-  margin-bottom: 0.5rem;
-  line-height: 1.4;
-}
 
 .phrase-meta {
   font-size: 0.875rem;
@@ -629,13 +618,7 @@ body {
     font-size: 1rem;
   }
 
-  .phrase-card {
-    padding: 0.75rem;
-  }
 
-  .phrase-text {
-    font-size: 1rem;
-  }
 
   .col-md-3 {
     display: none;
@@ -706,11 +689,7 @@ body {
 }
 
 /* 选中状态 */
-.phrase-card.selected {
-  border-color: #007bff;
-  background: linear-gradient(135deg, #e3f2fd 0%, #f8f9fa 100%);
-  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
-}
+
 
 /* 工具提示样式 */
 .tooltip {

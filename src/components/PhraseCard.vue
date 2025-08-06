@@ -124,13 +124,14 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .text-ellipsis {
-    display: block;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
+
 .tag-badge {
   background-image: radial-gradient(circle at 13% 13%,
       rgba(255, 221, 235, 0.8) 0%,
@@ -160,25 +161,44 @@ export default {
       transparent 24%),
     radial-gradient(circle at 90% 53%, rgba(187, 225, 250, 0.7) 0%, transparent 43%),
     radial-gradient(circle at 48% 32%, rgba(255, 248, 225, 0.5) 0%, transparent 81%);
-    border-radius: 8px;
-    padding: 1rem;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    height: 100%;
-}
- 
+  border-radius: 8px;
+  padding: 1rem;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  height: 100%;
 
-.phrase-card:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  &:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-image: radial-gradient(circle at 57% 22%,
+        rgba(255, 221, 235, 0.8) 0%,
+        transparent 64%),
+      radial-gradient(circle at 100% 83%, rgba(187, 225, 250, 0.7) 0%, transparent 43%),
+      radial-gradient(circle at 18% 72%, rgba(255, 248, 225, 0.5) 0%, transparent 81%);
 
-}
+    .tags-container {
+      max-width: calc(100% - 140px);
+    }
 
-.phrase-card:hover {
-  background-image: radial-gradient(circle at 57% 22%,
-      rgba(255, 221, 235, 0.8) 0%,
-      transparent 64%),
-    radial-gradient(circle at 100% 83%, rgba(187, 225, 250, 0.7) 0%, transparent 43%),
-    radial-gradient(circle at 18% 72%, rgba(255, 248, 225, 0.5) 0%, transparent 81%)
+    .phrase-actions {
+      display: flex;
+    }
+  }
+
+  &.border-warning .phrase-text {
+    border-left: 5px solid #ffc107;
+  }
+
+  // Styles moved from styles.css
+  &.unknown {
+    border-left: 4px solid #ffc107;
+    background: linear-gradient(90deg, #fff9e6 0%, white 10%);
+  }
+
+  &.selected {
+    border-color: #007bff;
+    background: linear-gradient(135deg, #e3f2fd 0%, #f8f9fa 100%);
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+  }
 }
 
 .phrase-text {
@@ -192,10 +212,10 @@ export default {
   -webkit-box-orient: vertical;
   border-left: 5px solid #ff399494;
   padding-left: 0.5rem;
-}
-
-.phrase-card.border-warning .phrase-text {
-  border-left: 5px solid #ffc107;
+  // Styles moved from styles.css
+  font-weight: 500;
+  color: #212529;
+  margin-bottom: 0.5rem;
 }
 
 .phrase-action-container {
@@ -216,29 +236,32 @@ export default {
   align-items: center;
 }
 
-.phrase-card:hover .tags-container {
-  max-width: calc(100% - 140px); /* 为操作按钮预留空间 */
-}
-
 .phrase-actions {
   transition: opacity 0.2s ease;
   display: none;
   position: relative;
   z-index: 10;
-}
 
-.phrase-card:hover .phrase-actions {
-  display: flex;
-}
-
-.phrase-actions .btn {
-  padding: 0.25rem 0.5rem;
-  font-size: 0.8rem;
+  .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+  }
 }
 
 :deep(mark) {
   background-color: #fff3cd;
   padding: 0 2px;
   border-radius: 2px;
+}
+
+// Media query moved from styles.css
+@media (max-width: 768px) {
+  .phrase-card {
+    padding: 0.75rem;
+  }
+
+  .phrase-text {
+    font-size: 1rem;
+  }
 }
 </style>
