@@ -79,14 +79,26 @@ export default {
   setup(props) {
     const highlightedText = computed(() => {
       if (!props.searchQuery) {
-        return escapeHtml(props.phrase.text);
+        // 直接返回原始HTML内容，保持富文本格式
+        return props.phrase.text;
       }
 
       const query = props.searchQuery.toLowerCase();
       const text = props.phrase.text;
-      const regex = new RegExp(`(${escapeRegExp(query)})`, "gi");
-
-      return escapeHtml(text).replace(regex, "<mark>$1</mark>");
+      
+      // 创建临时元素来获取纯文本内容用于搜索
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = text;
+      const plainText = tempDiv.textContent || tempDiv.innerText || '';
+      
+      // 如果纯文本中包含搜索词，则高亮显示
+      if (plainText.toLowerCase().includes(query.toLowerCase())) {
+        const regex = new RegExp(`(${escapeRegExp(query)})`, "gi");
+        // 在HTML内容中进行高亮替换，但要避免破坏现有的HTML标签
+        return text.replace(regex, "<mark>$1</mark>");
+      }
+      
+      return text;
     });
 
     const formatDate = (timestamp) => {
