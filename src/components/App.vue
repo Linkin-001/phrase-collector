@@ -212,6 +212,7 @@
                   @copy="copyPhrase"
                   @edit="editPhrase"
                   @delete="deletePhrase"
+                  @show-detail="showPhraseDetail"
                 />
               </div>
             </div>
@@ -255,6 +256,12 @@
       @close="closePhraseModal"
     />
     
+    <PhraseDetailModal
+      v-if="showPhraseDetailModal"
+      :phrase="detailPhrase"
+      @close="closePhraseDetailModal"
+    />
+    
     <ExportModal
       v-if="showExportModal"
       @export="handleExport"
@@ -295,6 +302,7 @@ import ExitConfirmModal from './ExitConfirmModal.vue'
 import ExportModal from './ExportModal.vue'
 import PhraseCard from './PhraseCard.vue'
 import PhraseModal from './PhraseModal.vue'
+import PhraseDetailModal from './PhraseDetailModal.vue'
 import SettingsModal from './SettingsModal.vue'
 import Toast from './Toast.vue'
 
@@ -313,6 +321,7 @@ export default {
   components: {
     PhraseCard,
     PhraseModal,
+    PhraseDetailModal,
     ExportModal,
     SettingsModal,
     ExitConfirmModal,
@@ -342,11 +351,13 @@ export default {
     
     // 模态框状态
     const showPhraseModal = ref(false)
+    const showPhraseDetailModal = ref(false)
     const showExportModal = ref(false)
     const showSettingsModal = ref(false)
     const showExitConfirmModal = ref(false)
     const showDeleteConfirmModal = ref(false)
     const editingPhrase = ref(null)
+    const detailPhrase = ref(null)
     const capturedText = ref('')
     const deletingPhrase = ref(null)
     
@@ -546,6 +557,16 @@ export default {
       capturedText.value = ''
     }
     
+    const showPhraseDetail = (phrase) => {
+      detailPhrase.value = phrase
+      showPhraseDetailModal.value = true
+    }
+    
+    const closePhraseDetailModal = () => {
+      showPhraseDetailModal.value = false
+      detailPhrase.value = null
+    }
+    
     const savePhrase = async (phraseData) => {
       try {
         if (editingPhrase.value) {
@@ -725,11 +746,13 @@ export default {
       selectedTags,
       stats,
       showPhraseModal,
+      showPhraseDetailModal,
       showExportModal,
       showSettingsModal,
       showExitConfirmModal,
       showDeleteConfirmModal,
       editingPhrase,
+      detailPhrase,
       capturedText,
       deletingPhrase,
       toast,
@@ -751,6 +774,8 @@ export default {
       openAddModal,
       editPhrase,
       closePhraseModal,
+      showPhraseDetail,
+      closePhraseDetailModal,
       savePhrase,
       toggleUnknown,
       copyPhrase,
