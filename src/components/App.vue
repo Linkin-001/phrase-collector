@@ -260,6 +260,8 @@
       v-if="showPhraseDetailModal"
       :phrase="detailPhrase"
       @close="closePhraseDetailModal"
+      @edit="editPhraseFromDetail"
+      @copy="copyPhrase"
     />
     
     <ExportModal
@@ -300,7 +302,7 @@ import { computed, onMounted, reactive, ref } from 'vue'
 import DeleteConfirmModal from './DeleteConfirmModal.vue'
 import ExitConfirmModal from './ExitConfirmModal.vue'
 import ExportModal from './ExportModal.vue'
-import PhraseCard from './PhraseCard.vue'
+import PhraseCard from './phrasecard.vue'
 import PhraseDetailModal from './PhraseDetailModal.vue'
 import PhraseModal from './PhraseModal.vue'
 import SettingsModal from './SettingsModal.vue'
@@ -551,6 +553,12 @@ export default {
       showPhraseModal.value = true
     }
     
+    const editPhraseFromDetail = (phrase) => {
+      editingPhrase.value = { ...phrase }
+      showPhraseDetailModal.value = false
+      showPhraseModal.value = true
+    }
+    
     const closePhraseModal = () => {
       showPhraseModal.value = false
       editingPhrase.value = null
@@ -773,6 +781,7 @@ export default {
       goToPage,
       openAddModal,
       editPhrase,
+      editPhraseFromDetail,
       closePhraseModal,
       showPhraseDetail,
       closePhraseDetailModal,
