@@ -4,7 +4,7 @@
       <div class="card-body d-flex flex-column p-0 justify-content-between">
         <div class="d-flex justify-content-between align-items-start mb-0">
           <div class="flex-grow-1 w-100">
-            <p class="card-text phrase-text" v-html="highlightedText"></p>
+            <div class="card-text phrase-text" v-html="highlightedText"></div>
             <p v-if="phrase.translation" class="text-muted small mb-1">
               <strong>翻译:</strong>
               <span class="text-ellipsis">{{ phrase.translation }}</span>

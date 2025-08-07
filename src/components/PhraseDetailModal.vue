@@ -2,16 +2,6 @@
   <div class="modal fade show d-block modern-modal" tabindex="-1">
     <div class="modal-dialog modal-lg">
       <div class="modal-content modern-modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">
-            <i class="bi bi-info-circle me-2"></i>短语详情
-          </h5>
-          <button 
-            type="button" 
-            class="bi bi-x btn-close" 
-            @click="$emit('close')"
-          ></button>
-        </div>
         <div class="modal-body">
           <!-- 分栏式布局 -->
           <div class="phrase-detail-columns">
@@ -22,8 +12,7 @@
                   <i class="bi bi-chat-text me-2 text-primary"></i>短语内容
                 </h6>
                 
-                <div class="phrase-text">
-                  {{ phrase.text }}
+                <div class="phrase-text" v-html="phrase.text">
                 </div>
                 
                 <div v-if="phrase.translation" class="phrase-translation">
@@ -256,7 +245,6 @@ export default {
   border-radius: 16px;
   padding: 1.5rem;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
   height: 100%;
 }
@@ -285,7 +273,6 @@ export default {
   margin-bottom: 1.5rem;
   padding: 1.25rem;
   background: linear-gradient(135deg, #e3f2fd 0%, #f0f8ff 100%);
-  border-radius: 12px;
   border-left: 4px solid #2196f3;
   word-break: break-word;
   line-height: 1.6;
@@ -311,7 +298,6 @@ export default {
   color: #495057;
   padding: 1rem;
   background: linear-gradient(135deg, #e8f5e8 0%, #f0fff0 100%);
-  border-radius: 10px;
   border-left: 3px solid #17a2b8;
   line-height: 1.5;
   box-shadow: 0 2px 6px rgba(23, 162, 184, 0.1);
@@ -326,7 +312,6 @@ export default {
   color: #6c757d;
   padding: 1rem;
   background: linear-gradient(135deg, #fff3cd 0%, #fffbf0 100%);
-  border-radius: 10px;
   border-left: 3px solid #ffc107;
   line-height: 1.5;
   font-style: italic;

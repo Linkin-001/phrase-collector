@@ -18,13 +18,43 @@
               <label for="phraseText" class="form-label modern-label">
                 <i class="bi bi-chat-text me-2"></i>短语内容 *
               </label>
+              
+              <!-- 富文本编辑器工具栏 -->
+               <div class="rich-editor-toolbar">
+                 <span 
+                   class="toolbar-label me-3"
+                   @click="toggleBold"
+                   :class="{ active: isBoldActive }"
+                   title="加粗 (Ctrl+B)"
+                 >
+                   <i class="bi bi-type-bold me-1"></i>加粗
+                 </span>
+                 <span 
+                   class="toolbar-label"
+                   @click="clearFormatting"
+                   title="清除格式"
+                 >
+                   <i class="bi bi-eraser me-1"></i>清除格式
+                 </span>
+               </div>
+              
+              <!-- 富文本编辑器 -->
+              <div 
+                ref="richEditor"
+                class="form-control modern-rich-editor" 
+                contenteditable="true"
+                @input="handleRichTextInput"
+                @keydown="handleKeydown"
+                @focus="handleFocus"
+                @blur="handleBlur"
+                :data-placeholder="'请输入短语内容...'"
+              ></div>
+              
+              <!-- 隐藏的textarea用于表单验证 -->
               <textarea 
-                id="phraseText"
                 v-model="formData.text"
-                class="form-control modern-textarea" 
-                rows="5" 
+                style="display: none;"
                 required
-                placeholder="请输入短语内容..."
               ></textarea>
             </div>
             
@@ -146,6 +176,8 @@ export default {
   emits: ['save', 'close'],
   setup(props, { emit }) {
     const tagInput = ref('')
+    const richEditor = ref(null)
+    const isBoldActive = ref(false)
     
     const formData = reactive({
       text: '',
@@ -154,6 +186,54 @@ export default {
       tags: [],
       isUnknown: false
     })
+    
+    // 富文本编辑器方法
+    const toggleBold = () => {
+      document.execCommand('bold', false, null)
+      updateBoldState()
+      richEditor.value?.focus()
+    }
+    
+    const clearFormatting = () => {
+      document.execCommand('removeFormat', false, null)
+      updateBoldState()
+      richEditor.value?.focus()
+    }
+    
+    const updateBoldState = () => {
+      isBoldActive.value = document.queryCommandState('bold')
+    }
+    
+    const handleRichTextInput = () => {
+      if (richEditor.value) {
+        // 获取纯文本内容用于验证
+        const textContent = richEditor.value.textContent || ''
+        // 获取HTML内容用于保存
+        const htmlContent = richEditor.value.innerHTML || ''
+        
+        // 更新formData，保存HTML格式
+        formData.text = htmlContent
+        
+        // 更新工具栏状态
+        updateBoldState()
+      }
+    }
+    
+    const handleKeydown = (event) => {
+      // Ctrl+B 快捷键加粗
+      if (event.ctrlKey && event.key === 'b') {
+        event.preventDefault()
+        toggleBold()
+      }
+    }
+    
+    const handleFocus = () => {
+      updateBoldState()
+    }
+    
+    const handleBlur = () => {
+      updateBoldState()
+    }
     
     // 初始化表单数据
     const initFormData = () => {
@@ -165,12 +245,26 @@ export default {
         formData.tags = props.phrase.tags ? 
           props.phrase.tags.map(tag => typeof tag === 'string' ? tag : tag.name) : []
         formData.isUnknown = props.phrase.isUnknown || false
+        
+        // 设置富文本编辑器内容
+        nextTick(() => {
+          if (richEditor.value) {
+            richEditor.value.innerHTML = formData.text
+          }
+        })
       } else {
         formData.text = props.capturedText || ''
         formData.translation = ''
         formData.notes = ''
         formData.tags = []
         formData.isUnknown = false
+        
+        // 设置富文本编辑器内容
+        nextTick(() => {
+          if (richEditor.value) {
+            richEditor.value.innerHTML = formData.text
+          }
+        })
       }
     }
     
@@ -187,13 +281,15 @@ export default {
     }
     
     const handleSubmit = () => {
-      if (!formData.text.trim()) {
+      // 获取纯文本内容用于验证
+      const textContent = richEditor.value?.textContent || ''
+      if (!textContent.trim()) {
         return
       }
       
       // 创建纯JavaScript对象，避免Vue响应式对象序列化问题
       const phraseData = {
-        text: formData.text.trim(),
+        text: formData.text, // 保存HTML格式的内容
         translation: formData.translation.trim() || null,
         notes: formData.notes.trim() || null,
         tags: [...(formData.tags || [])], // 创建新数组避免响应式引用
@@ -216,14 +312,17 @@ export default {
     })
     
     onMounted(() => {
-      // 自动聚焦到文本框
+      // 自动聚焦到富文本编辑器
       nextTick(() => {
-        const textArea = document.getElementById('phraseText')
-        if (textArea) {
-          textArea.focus()
+        if (richEditor.value) {
+          richEditor.value.focus()
           if (!props.phrase && props.capturedText) {
             // 如果是快速捕获，选中所有文本
-            textArea.select()
+            const range = document.createRange()
+            range.selectNodeContents(richEditor.value)
+            const selection = window.getSelection()
+            selection?.removeAllRanges()
+            selection?.addRange(range)
           }
         }
       })
@@ -232,9 +331,17 @@ export default {
     return {
       formData,
       tagInput,
+      richEditor,
+      isBoldActive,
       addTag,
       removeTag,
-      handleSubmit
+      handleSubmit,
+      toggleBold,
+      clearFormatting,
+      handleRichTextInput,
+      handleKeydown,
+      handleFocus,
+      handleBlur
     }
   }
 }
@@ -249,6 +356,82 @@ export default {
 
 .tag-item .btn-close {
   cursor: pointer;
+}
+
+/* 富文本编辑器样式 */
+.rich-editor-toolbar {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-bottom: none;
+  border-radius: 0.375rem 0.375rem 0 0;
+}
+
+.toolbar-label {
+   display: inline-flex;
+   align-items: center;
+   padding: 0.375rem 0.75rem;
+   font-size: 0.875rem;
+   font-weight: 500;
+   color: #6c757d;
+   cursor: pointer;
+   border-radius: 0.25rem;
+   transition: all 0.2s ease;
+   user-select: none;
+ }
+ 
+ .toolbar-label:hover {
+   color: #0d6efd;
+   background-color: rgba(13, 110, 253, 0.1);
+ }
+ 
+ .toolbar-label.active {
+   color: #0d6efd;
+   background-color: rgba(13, 110, 253, 0.15);
+   font-weight: 600;
+ }
+
+.modern-rich-editor {
+  min-height: 120px;
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 0.75rem;
+  border-radius: 0 0 0.375rem 0.375rem;
+  border-top: none;
+  line-height: 1.5;
+  font-family: inherit;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.modern-rich-editor:focus {
+  box-shadow: none;
+  outline: none;
+  border: 2px solid #0078d7a6;
+  
+}
+
+.modern-rich-editor:empty:before {
+  content: attr(data-placeholder);
+  color: #6c757d;
+  font-style: italic;
+}
+
+.modern-rich-editor b,
+.modern-rich-editor strong {
+  font-weight: 600;
+  color: #212529;
+}
+
+.modern-rich-editor p {
+  margin: 0 0 0.5rem 0;
+}
+
+.modern-rich-editor p:last-child {
+  margin-bottom: 0;
 }
 
 .modal {

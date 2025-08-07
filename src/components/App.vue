@@ -301,8 +301,8 @@ import DeleteConfirmModal from './DeleteConfirmModal.vue'
 import ExitConfirmModal from './ExitConfirmModal.vue'
 import ExportModal from './ExportModal.vue'
 import PhraseCard from './PhraseCard.vue'
-import PhraseModal from './PhraseModal.vue'
 import PhraseDetailModal from './PhraseDetailModal.vue'
+import PhraseModal from './PhraseModal.vue'
 import SettingsModal from './SettingsModal.vue'
 import Toast from './Toast.vue'
 
@@ -896,9 +896,8 @@ export default {
 }
 
 .modern-search-container:focus-within {
-  border-color: #0d6efd;
-  box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1), 0 4px 16px rgba(13, 110, 253, 0.15);
-  transform: translateY(-1px);
+  border-color: #0078d7a6;
+  box-shadow: none;
 }
 
 .search-icon {
@@ -913,7 +912,7 @@ export default {
 }
 
 .modern-search-container:focus-within .search-icon {
-  color: #0d6efd;
+  color: #6c757d;
 }
 
 .modern-search-input {
