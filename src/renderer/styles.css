@@ -29,7 +29,8 @@ body {
 
 #searchInput:focus {
   background: white;
-  box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.25);
+  box-shadow: none;
+  outline: none;
 }
 
 /* 侧边栏样式 */
@@ -397,11 +398,10 @@ body {
 }
 
 .form-control:focus {
-  border-color: rgba(0, 123, 255, 0.4);
-  box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.1),
-    0 4px 12px rgba(0, 123, 255, 0.15);
+  border-color: #0078d7a6;
+  box-shadow: none;
   background: #ffffff;
-  transform: translateY(-1px);
+  outline: none;
 }
 
 .form-control:hover:not(:focus) {
@@ -419,10 +419,10 @@ body {
 }
 
 .form-select:focus {
-  border-color: rgba(0, 123, 255, 0.4);
-  box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.1),
-    0 4px 12px rgba(0, 123, 255, 0.15);
+  border-color: #0078d7a6;
+  box-shadow: none;
   background: #ffffff;
+  outline: none;
 }
 
 .form-label {
@@ -1140,9 +1140,8 @@ kbd {
 
 .modern-select:focus {
   outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1), 0 4px 15px rgba(0, 123, 255, 0.15);
-  transform: translateY(-1px);
+  border-color: #0078d7a6;
+  box-shadow: none;
 }
 
 /* 下拉框选项容器样式 */
@@ -1220,9 +1219,9 @@ kbd {
 
 /* 下拉框展开时的容器样式 */
 .modern-select:focus {
-  border-color: #007bff;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1), 0 8px 25px rgba(0, 123, 255, 0.15);
-  transform: translateY(-1px);
+  border-color: #0078d7a6;
+  box-shadow: none;
+  outline: none;
 }
 
 /* 为下拉选项添加更好的视觉分隔 */

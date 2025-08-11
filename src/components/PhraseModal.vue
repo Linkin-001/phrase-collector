@@ -18,13 +18,43 @@
               <label for="phraseText" class="form-label modern-label">
                 <i class="bi bi-chat-text me-2"></i>短语内容 *
               </label>
+              
+              <!-- 富文本编辑器工具栏 -->
+               <div class="rich-editor-toolbar">
+                 <span 
+                   class="toolbar-label me-3"
+                   @click="toggleBold"
+                   :class="{ active: isBoldActive }"
+                   title="加粗 (Ctrl+B)"
+                 >
+                   <i class="bi bi-type-bold me-1"></i>加粗
+                 </span>
+                 <span 
+                   class="toolbar-label"
+                   @click="clearFormatting"
+                   title="清除格式"
+                 >
+                   <i class="bi bi-eraser me-1"></i>清除格式
+                 </span>
+               </div>
+              
+              <!-- 富文本编辑器 -->
+              <div 
+                ref="richEditor"
+                class="form-control modern-rich-editor" 
+                contenteditable="true"
+                @input="handleRichTextInput"
+                @keydown="handleKeydown"
+                @focus="handleFocus"
+                @blur="handleBlur"
+                :data-placeholder="'请输入短语内容...'"
+              ></div>
+              
+              <!-- 隐藏的textarea用于表单验证 -->
               <textarea 
-                id="phraseText"
                 v-model="formData.text"
-                class="form-control modern-textarea" 
-                rows="5" 
+                style="display: none;"
                 required
-                placeholder="请输入短语内容..."
               ></textarea>
             </div>
             
@@ -58,17 +88,42 @@
               <label for="phraseTags" class="form-label modern-label">
                 <i class="bi bi-tags me-2"></i>标签
               </label>
-              <input 
-                id="phraseTags"
-                v-model="tagInput"
-                @keydown.enter.prevent="addTag"
-                @keydown="(e) => e.key === ',' && (e.preventDefault(), addTag())"
-                type="text" 
-                class="form-control modern-input" 
-                placeholder="输入标签后按回车或逗号添加"
-              >
+              <div class="tag-input-container position-relative">
+                <input 
+                  id="phraseTags"
+                  ref="tagInputRef"
+                  v-model="tagInput"
+                  @input="handleTagInput"
+                  @keydown="handleTagKeydown"
+                  @blur="handleTagBlur"
+                  @focus="handleTagInput"
+                  type="text" 
+                  class="form-control modern-input" 
+                  placeholder="输入标签名称，支持从现有标签中选择"
+                  autocomplete="off"
+                >
+                
+                <!-- 标签下拉选择框 -->
+                <div 
+                  v-if="showTagDropdown && filteredTags.length > 0" 
+                  class="tag-dropdown position-absolute w-100"
+                >
+                  <div 
+                    v-for="tag in filteredTags" 
+                    :key="tag.name"
+                    class="tag-dropdown-item d-flex justify-content-between align-items-center"
+                    @click="selectTag(tag.name)"
+                  >
+                    <span class="tag-name">
+                      <i class="bi bi-tag-fill me-2 text-primary"></i>{{ tag.name }}
+                    </span>
+                    <small class="tag-count text-muted">{{ tag.count }}次</small>
+                  </div>
+                </div>
+              </div>
+              
               <div class="form-text modern-form-text">
-                <i class="bi bi-info-circle me-1"></i>按回车键或逗号添加标签
+                <i class="bi bi-info-circle me-1"></i>按空格键或回车键添加标签，支持从现有标签中选择
               </div>
               
               <div v-if="formData.tags.length > 0" class="mt-3">
@@ -129,7 +184,7 @@
 </template>
 
 <script>
-import { nextTick, onMounted, reactive, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
 
 export default {
   name: 'PhraseModal',
@@ -141,11 +196,19 @@ export default {
     capturedText: {
       type: String,
       default: ''
+    },
+    availableTags: {
+      type: Array,
+      default: () => []
     }
   },
   emits: ['save', 'close'],
   setup(props, { emit }) {
     const tagInput = ref('')
+    const richEditor = ref(null)
+    const isBoldActive = ref(false)
+    const showTagDropdown = ref(false)
+    const tagInputRef = ref(null)
     
     const formData = reactive({
       text: '',
@@ -154,6 +217,67 @@ export default {
       tags: [],
       isUnknown: false
     })
+    
+    // 过滤匹配的标签
+    const filteredTags = computed(() => {
+      if (!tagInput.value.trim()) return []
+      
+      const inputValue = tagInput.value.toLowerCase().trim()
+      return props.availableTags
+        .filter(tag => 
+          tag.name.toLowerCase().includes(inputValue) && 
+          !formData.tags.includes(tag.name)
+        )
+        .slice(0, 5) // 最多显示5个建议
+    })
+    
+    // 富文本编辑器方法
+    const toggleBold = () => {
+      document.execCommand('bold', false, null)
+      updateBoldState()
+      richEditor.value?.focus()
+    }
+    
+    const clearFormatting = () => {
+      document.execCommand('removeFormat', false, null)
+      updateBoldState()
+      richEditor.value?.focus()
+    }
+    
+    const updateBoldState = () => {
+      isBoldActive.value = document.queryCommandState('bold')
+    }
+    
+    const handleRichTextInput = () => {
+      if (richEditor.value) {
+        // 获取纯文本内容用于验证
+        const textContent = richEditor.value.textContent || ''
+        // 获取HTML内容用于保存
+        const htmlContent = richEditor.value.innerHTML || ''
+        
+        // 更新formData，保存HTML格式
+        formData.text = htmlContent
+        
+        // 更新工具栏状态
+        updateBoldState()
+      }
+    }
+    
+    const handleKeydown = (event) => {
+      // Ctrl+B 快捷键加粗
+      if (event.ctrlKey && event.key === 'b') {
+        event.preventDefault()
+        toggleBold()
+      }
+    }
+    
+    const handleFocus = () => {
+      updateBoldState()
+    }
+    
+    const handleBlur = () => {
+      updateBoldState()
+    }
     
     // 初始化表单数据
     const initFormData = () => {
@@ -165,21 +289,64 @@ export default {
         formData.tags = props.phrase.tags ? 
           props.phrase.tags.map(tag => typeof tag === 'string' ? tag : tag.name) : []
         formData.isUnknown = props.phrase.isUnknown || false
+        
+        // 设置富文本编辑器内容
+        nextTick(() => {
+          if (richEditor.value) {
+            richEditor.value.innerHTML = formData.text
+          }
+        })
       } else {
         formData.text = props.capturedText || ''
         formData.translation = ''
         formData.notes = ''
         formData.tags = []
         formData.isUnknown = false
+        
+        // 设置富文本编辑器内容
+        nextTick(() => {
+          if (richEditor.value) {
+            richEditor.value.innerHTML = formData.text
+          }
+        })
       }
     }
     
-    const addTag = () => {
-      const tag = tagInput.value.trim().replace(/,+$/, '')
+    const addTag = (tagName = null) => {
+      const tag = (tagName || tagInput.value.trim().replace(/,+$/, ''))
       if (tag && !formData.tags.includes(tag)) {
         formData.tags.push(tag)
         tagInput.value = ''
+        showTagDropdown.value = false
       }
+    }
+    
+    const selectTag = (tagName) => {
+      addTag(tagName)
+    }
+    
+    const handleTagInput = () => {
+      showTagDropdown.value = filteredTags.value.length > 0
+    }
+    
+    const handleTagKeydown = (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault()
+        if (filteredTags.value.length > 0) {
+          selectTag(filteredTags.value[0].name)
+        } else {
+          addTag()
+        }
+      } else if (event.key === 'Escape') {
+        showTagDropdown.value = false
+      }
+    }
+    
+    const handleTagBlur = () => {
+      // 延迟隐藏下拉框，以便点击下拉项时能正常触发
+      setTimeout(() => {
+        showTagDropdown.value = false
+      }, 200)
     }
     
     const removeTag = (index) => {
@@ -187,13 +354,15 @@ export default {
     }
     
     const handleSubmit = () => {
-      if (!formData.text.trim()) {
+      // 获取纯文本内容用于验证
+      const textContent = richEditor.value?.textContent || ''
+      if (!textContent.trim()) {
         return
       }
       
       // 创建纯JavaScript对象，避免Vue响应式对象序列化问题
       const phraseData = {
-        text: formData.text.trim(),
+        text: formData.text, // 保存HTML格式的内容
         translation: formData.translation.trim() || null,
         notes: formData.notes.trim() || null,
         tags: [...(formData.tags || [])], // 创建新数组避免响应式引用
@@ -216,14 +385,17 @@ export default {
     })
     
     onMounted(() => {
-      // 自动聚焦到文本框
+      // 自动聚焦到富文本编辑器
       nextTick(() => {
-        const textArea = document.getElementById('phraseText')
-        if (textArea) {
-          textArea.focus()
+        if (richEditor.value) {
+          richEditor.value.focus()
           if (!props.phrase && props.capturedText) {
             // 如果是快速捕获，选中所有文本
-            textArea.select()
+            const range = document.createRange()
+            range.selectNodeContents(richEditor.value)
+            const selection = window.getSelection()
+            selection?.removeAllRanges()
+            selection?.addRange(range)
           }
         }
       })
@@ -232,9 +404,24 @@ export default {
     return {
       formData,
       tagInput,
+      tagInputRef,
+      richEditor,
+      isBoldActive,
+      showTagDropdown,
+      filteredTags,
       addTag,
+      selectTag,
+      handleTagInput,
+      handleTagKeydown,
+      handleTagBlur,
       removeTag,
-      handleSubmit
+      handleSubmit,
+      toggleBold,
+      clearFormatting,
+      handleRichTextInput,
+      handleKeydown,
+      handleFocus,
+      handleBlur
     }
   }
 }
@@ -249,6 +436,122 @@ export default {
 
 .tag-item .btn-close {
   cursor: pointer;
+}
+
+/* 标签输入下拉框样式 */
+.tag-input-container {
+  position: relative;
+}
+
+.tag-dropdown {
+  top: 100%;
+  left: 0;
+  z-index: 1050;
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 0.375rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.tag-dropdown-item {
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease-in-out;
+  border-bottom: 1px solid #f8f9fa;
+}
+
+.tag-dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.tag-dropdown-item:hover {
+  background-color: #f8f9fa;
+}
+
+.tag-name {
+  font-weight: 500;
+}
+
+.tag-count {
+  font-size: 0.75rem;
+}
+
+/* 富文本编辑器样式 */
+.rich-editor-toolbar {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-bottom: none;
+  border-radius: 0.375rem 0.375rem 0 0;
+}
+
+.toolbar-label {
+   display: inline-flex;
+   align-items: center;
+   padding: 0.375rem 0.75rem;
+   font-size: 0.875rem;
+   font-weight: 500;
+   color: #6c757d;
+   cursor: pointer;
+   border-radius: 0.25rem;
+   transition: all 0.2s ease;
+   user-select: none;
+ }
+ 
+ .toolbar-label:hover {
+   color: #0d6efd;
+   background-color: rgba(13, 110, 253, 0.1);
+ }
+ 
+ .toolbar-label.active {
+   color: #0d6efd;
+   background-color: rgba(13, 110, 253, 0.15);
+   font-weight: 600;
+ }
+
+.modern-rich-editor {
+  min-height: 120px;
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 0.75rem;
+  border-radius: 0 0 0.375rem 0.375rem;
+  border-top: none;
+  line-height: 1.5;
+  font-family: inherit;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.modern-rich-editor:focus {
+  box-shadow: none;
+  outline: none;
+  border: 2px solid #0078d7a6;
+  
+}
+
+.modern-rich-editor:empty:before {
+  content: attr(data-placeholder);
+  color: #6c757d;
+  font-style: italic;
+}
+
+.modern-rich-editor b,
+.modern-rich-editor strong {
+  font-weight: 600;
+  color: #212529;
+}
+
+.modern-rich-editor p {
+  margin: 0 0 0.5rem 0;
+}
+
+.modern-rich-editor p:last-child {
+  margin-bottom: 0;
 }
 
 .modal {

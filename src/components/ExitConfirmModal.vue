@@ -323,8 +323,9 @@ export default {
 }
 
 .form-check-input:focus {
-  border-color: #80bdff;
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  border-color: #0078d7a6;
+  box-shadow: none;
+  outline: none;
 }
 
 .form-check-label {

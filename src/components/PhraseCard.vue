@@ -1,10 +1,10 @@
 <template>
   <div class="col-12 col-lg-6 col-xl-4">
-    <div class="card phrase-card" :class="{ 'border-warning': phrase.isUnknown }">
+    <div class="card phrase-card" :class="{ 'border-warning': phrase.isUnknown }" @click="$emit('show-detail', phrase)" title="点击查看详情">
       <div class="card-body d-flex flex-column p-0 justify-content-between">
         <div class="d-flex justify-content-between align-items-start mb-0">
           <div class="flex-grow-1 w-100">
-            <p class="card-text phrase-text" v-html="highlightedText"></p>
+            <div class="card-text phrase-text" v-html="highlightedText"></div>
             <p v-if="phrase.translation" class="text-muted small mb-1">
               <strong>翻译:</strong>
               <span class="text-ellipsis">{{ phrase.translation }}</span>
@@ -33,7 +33,7 @@
               </div>
             </div>
 
-            <div class="phrase-actions flex-shrink-0">
+            <div class="phrase-actions flex-shrink-0" @click.stop>
               <button @click="$emit('toggle-unknown', phrase)" :class="[
                 'btn btn-sm me-1',
                 phrase.isUnknown ? 'btn-warning' : 'btn-outline-secondary',
@@ -75,18 +75,30 @@ export default {
       default: "",
     },
   },
-  emits: ["toggle-unknown", "copy", "edit", "delete"],
+  emits: ["toggle-unknown", "copy", "edit", "delete", "show-detail"],
   setup(props) {
     const highlightedText = computed(() => {
       if (!props.searchQuery) {
-        return escapeHtml(props.phrase.text);
+        // 直接返回原始HTML内容，保持富文本格式
+        return props.phrase.text;
       }
 
       const query = props.searchQuery.toLowerCase();
       const text = props.phrase.text;
-      const regex = new RegExp(`(${escapeRegExp(query)})`, "gi");
-
-      return escapeHtml(text).replace(regex, "<mark>$1</mark>");
+      
+      // 创建临时元素来获取纯文本内容用于搜索
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = text;
+      const plainText = tempDiv.textContent || tempDiv.innerText || '';
+      
+      // 如果纯文本中包含搜索词，则高亮显示
+      if (plainText.toLowerCase().includes(query.toLowerCase())) {
+        const regex = new RegExp(`(${escapeRegExp(query)})`, "gi");
+        // 在HTML内容中进行高亮替换，但要避免破坏现有的HTML标签
+        return text.replace(regex, "<mark>$1</mark>");
+      }
+      
+      return text;
     });
 
     const formatDate = (timestamp) => {
@@ -216,6 +228,17 @@ export default {
   font-weight: 500;
   color: #212529;
   margin-bottom: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    color: #007bff;
+    background-color: rgba(0, 123, 255, 0.05);
+    border-radius: 4px;
+    padding: 0.25rem 0.5rem;
+    margin: -0.25rem -0.5rem 0.25rem 0;
+    border-left-color: #007bff;
+  }
 }
 
 .phrase-action-container {
