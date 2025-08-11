@@ -252,6 +252,7 @@
       v-if="showPhraseModal"
       :phrase="editingPhrase"
       :captured-text="capturedText"
+      :available-tags="availableTags"
       @save="savePhrase"
       @close="closePhraseModal"
     />
