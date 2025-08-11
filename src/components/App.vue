@@ -60,6 +60,31 @@
         <!-- 侧边栏 -->
         <div class="col-md-3 bg-light border-end sidebar-container">
           <div class="sidebar-content">
+            <!-- 搜索框 -->
+            <div class="mb-3">
+              <div class="modern-search-container">
+                <div class="search-icon">
+                  <i class="bi bi-search"></i>
+                </div>
+                <input 
+                  type="text" 
+                  v-model="searchQuery" 
+                  @input="handleSearch"
+                  class="modern-search-input" 
+                  placeholder="搜索你的短语收藏..."
+                >
+                <button 
+                  v-if="searchQuery"
+                  class="clear-search-btn" 
+                  type="button" 
+                  @click="clearSearch"
+                  title="清除搜索"
+                >
+                  <i class="bi bi-x-circle-fill"></i>
+                </button>
+              </div>
+            </div>
+            
             <!-- 统计信息 -->
             <div class="card mb-3">
               <div class="card-body">
@@ -162,31 +187,6 @@
 
         <!-- 主内容区 -->
         <div class="col-md-9 main-content-column">
-          <!-- 固定搜索框区域 -->
-          <div class="search-area">
-            <div class="modern-search-container">
-              <div class="search-icon">
-                <i class="bi bi-search"></i>
-              </div>
-              <input 
-                type="text" 
-                v-model="searchQuery" 
-                @input="handleSearch"
-                class="modern-search-input form-control form-control-sm" 
-                placeholder="搜索你的短语收藏..."
-              >
-              <button 
-                v-if="searchQuery"
-                class="clear-search-btn" 
-                type="button" 
-                @click="clearSearch"
-                title="清除搜索"
-              >
-                <i class="bi bi-x-circle-fill"></i>
-              </button>
-            </div>
-          </div>
-          
           <!-- 可滚动内容区域 -->
           <div class="scrollable-content">
             
@@ -850,13 +850,7 @@ export default {
   height: 100%;
 }
 
-.search-area {
-  flex-shrink: 0;
-  padding: 0.5rem;
-  padding-bottom: 0 !important;
-  padding-top: 1rem;
-  background: white;
-}
+
 
 .scrollable-content {
   flex: 1;
@@ -949,8 +943,6 @@ export default {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   overflow: hidden;
-  max-width: 400px;
-  margin: 0 auto;
 }
 
 .modern-search-container:hover {

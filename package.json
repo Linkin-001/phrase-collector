@@ -8,6 +8,8 @@
     "start": "npm run build:dev && electron .",
     "dev": "cross-env NODE_ENV=development npm run build:dev && cross-env NODE_ENV=development electron .",
     "build:dev": "vite build --config vite.main.config.js && vite build --config vite.preload.config.js && vite build --config vite.config.js",
+    "clean": "rimraf dist",
+    "prebuild": "npm run clean",
     "build": "cross-env NODE_ENV=production npm run build:dev && electron-builder",
     "build:win": "cross-env NODE_ENV=production npm run build:dev && electron-builder --win",
     "build:mac": "cross-env NODE_ENV=production npm run build:dev && electron-builder --mac",
@@ -31,6 +33,7 @@
     "electron-builder": "^26.0.12",
     "electron-rebuild": "^3.2.9",
     "electron-reload": "^2.0.0-alpha.1",
+    "rimraf": "^3.0.2",
     "sass-embedded": "^1.90.0",
     "scss": "^0.2.4",
     "vite": "^5.0.0"
@@ -49,11 +52,10 @@
     "files": [
       "dist/**/*",
       "src/database.js",
-      "node_modules/**/*",
       "package.json",
       "!src/hot-reload.js",
-      "!node_modules/electron-reload/**/*",
-      "!node_modules/@electron/rebuild/**/*"
+      "!.git/**/*",
+      "!*.md"
     ],
     "win": {
       "target": [
