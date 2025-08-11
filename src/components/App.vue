@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex flex-column h-100">
+  <div class="app-container">
     <!-- 自定义标题栏 -->
     <div class="custom-titlebar">
       <div class="titlebar-drag-region">
@@ -55,11 +55,11 @@
     </nav>
 
     <!-- 主要内容区域 -->
-    <div class="container-fluid flex-grow-1 p-0">
+    <div class="main-content-area">
       <div class="row h-100 g-0">
         <!-- 侧边栏 -->
-        <div class="col-md-3 bg-light border-end">
-          <div class="p-3">
+        <div class="col-md-3 bg-light border-end sidebar-container">
+          <div class="sidebar-content">
             <!-- 统计信息 -->
             <div class="card mb-3">
               <div class="card-body">
@@ -161,32 +161,34 @@
         </div>
 
         <!-- 主内容区 -->
-        <div class="col-md-9">
-          <div class="p-3 h-100 d-flex flex-column">
-            <!-- 搜索框 -->
-             <div class="mb-4">
-               <div class="modern-search-container">
-                 <div class="search-icon">
-                   <i class="bi bi-search"></i>
-                 </div>
-                 <input 
-                   type="text" 
-                   v-model="searchQuery" 
-                   @input="handleSearch"
-                   class="modern-search-input" 
-                   placeholder="搜索你的短语收藏..."
-                 >
-                 <button 
-                   v-if="searchQuery"
-                   class="clear-search-btn" 
-                   type="button" 
-                   @click="clearSearch"
-                   title="清除搜索"
-                 >
-                   <i class="bi bi-x-circle-fill"></i>
-                 </button>
-               </div>
-             </div>
+        <div class="col-md-9 main-content-column">
+          <!-- 固定搜索框区域 -->
+          <div class="search-area">
+            <div class="modern-search-container">
+              <div class="search-icon">
+                <i class="bi bi-search"></i>
+              </div>
+              <input 
+                type="text" 
+                v-model="searchQuery" 
+                @input="handleSearch"
+                class="modern-search-input form-control form-control-sm" 
+                placeholder="搜索你的短语收藏..."
+              >
+              <button 
+                v-if="searchQuery"
+                class="clear-search-btn" 
+                type="button" 
+                @click="clearSearch"
+                title="清除搜索"
+              >
+                <i class="bi bi-x-circle-fill"></i>
+              </button>
+            </div>
+          </div>
+          
+          <!-- 可滚动内容区域 -->
+          <div class="scrollable-content">
             
             <!-- 短语列表 -->
             <div class="flex-grow-1">
@@ -812,6 +814,56 @@ export default {
 </script>
 
 <style scoped>
+/* 应用整体布局 */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* 主要内容区域 */
+.main-content-area {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 侧边栏容器 */
+.sidebar-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.sidebar-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+/* 主内容区域 */
+.main-content-column {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.search-area {
+  flex-shrink: 0;
+  padding: 0.5rem;
+  padding-bottom: 0 !important;
+  padding-top: 1rem;
+  background: white;
+}
+
+.scrollable-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
 .cursor-pointer {
   cursor: pointer;
 }
@@ -897,6 +949,8 @@ export default {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   overflow: hidden;
+  max-width: 400px;
+  margin: 0 auto;
 }
 
 .modern-search-container:hover {
@@ -914,10 +968,10 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   color: #6c757d;
-  font-size: 16px;
+  font-size: 14px;
   transition: color 0.3s ease;
 }
 
@@ -930,8 +984,8 @@ export default {
   border: none;
   outline: none;
   background: transparent;
-  padding: 14px 16px 14px 0;
-  font-size: 15px;
+  padding: 8px 12px 8px 0;
+  font-size: 14px;
   color: #212529;
   line-height: 1.4;
 }
@@ -945,16 +999,16 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   margin-right: 4px;
   border: none;
   background: transparent;
   color: #6c757d;
-  border-radius: 12px;
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
-  font-size: 16px;
+  font-size: 14px;
 }
 
 .clear-search-btn:hover {
@@ -974,8 +1028,8 @@ export default {
   }
   
   .search-icon {
-    width: 44px;
-    height: 44px;
+    width: 36px;
+    height: 36px;
   }
   
   .modern-search-input {
