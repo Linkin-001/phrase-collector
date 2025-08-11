@@ -5,8 +5,8 @@
   "main": "dist/main.js",
   "license": "MIT",
   "scripts": {
-    "start": "npm run build:dev && electron .",
     "dev": "cross-env NODE_ENV=development npm run build:dev && cross-env NODE_ENV=development electron .",
+    "start": "npm run dev",
     "build:dev": "vite build --config vite.main.config.js && vite build --config vite.preload.config.js && vite build --config vite.config.js",
     "clean": "rimraf dist",
     "prebuild": "npm run clean",
